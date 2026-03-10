@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="PBPyq6IJXLXReeoKUtrI" name="Page-1">
-        <mxGraphModel dx="2130" dy="1966" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+        <mxGraphModel dx="1726" dy="1693" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -34,7 +34,7 @@
                 <mxCell id="22" value="Munkafolyamat" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="480" y="310" width="280" height="180" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;+ name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ duration: int&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="22" vertex="1">
+                <mxCell id="23" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;- name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- duration: int&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="22" vertex="1">
                     <mxGeometry y="29" width="280" height="51" as="geometry"/>
                 </mxCell>
                 <mxCell id="24" value="&amp;lt;&amp;lt;getter&amp;gt;&amp;gt;&lt;div&gt;getInfo()&lt;/div&gt;&lt;div&gt;&amp;lt;&amp;lt;setter&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;+ setName(name)&lt;/div&gt;&lt;div&gt;+ setDuration(time)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="22" vertex="1">
@@ -43,7 +43,7 @@
                 <mxCell id="27" value="Alkatrész" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="480" y="560" width="130" height="180" as="geometry"/>
                 </mxCell>
-                <mxCell id="28" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;+ name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ quantity: int&amp;nbsp;&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="27" vertex="1">
+                <mxCell id="28" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;- name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- quantity: int&amp;nbsp;&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="27" vertex="1">
                     <mxGeometry y="29" width="130" height="51" as="geometry"/>
                 </mxCell>
                 <mxCell id="29" value="&amp;lt;&amp;lt;getter&amp;gt;&amp;gt;&lt;div&gt;getInfo()&lt;/div&gt;&lt;div&gt;&amp;lt;&amp;lt;setter&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;+ setName(name)&lt;/div&gt;&lt;div&gt;+ setQuantity(number)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="27" vertex="1">
@@ -52,7 +52,7 @@
                 <mxCell id="30" value="Jármű" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="840" y="310" width="200" height="260" as="geometry"/>
                 </mxCell>
-                <mxCell id="31" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;+ numberPlate: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ make: string&lt;/div&gt;&lt;div&gt;+ model: string&lt;/div&gt;&lt;div&gt;+ ownerName: string&lt;/div&gt;&lt;div&gt;+ ownerAddress: string&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="30" vertex="1">
+                <mxCell id="31" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;- numberPlate: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- make: string&lt;/div&gt;&lt;div&gt;- model: string&lt;/div&gt;&lt;div&gt;- ownerName: string&lt;/div&gt;&lt;div&gt;- ownerAddress: string&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="30" vertex="1">
                     <mxGeometry y="29" width="200" height="101" as="geometry"/>
                 </mxCell>
                 <mxCell id="32" value="&amp;lt;&amp;lt;getter&amp;gt;&amp;gt;&lt;div&gt;getInfo()&lt;/div&gt;&lt;div&gt;&amp;lt;&amp;lt;setter&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;+ setNumberPlate(numberPlate)&lt;/div&gt;&lt;div&gt;+ setMake(make)&lt;/div&gt;&lt;div&gt;+ setModel(model)&lt;/div&gt;&lt;div&gt;+ setOwner(name)&lt;/div&gt;&lt;div&gt;+ setOwnerAddress(address)&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" parent="30" vertex="1">
@@ -93,7 +93,7 @@
                 <mxCell id="43" value="Anyag" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" vertex="1" parent="1">
                     <mxGeometry x="630" y="560" width="130" height="180" as="geometry"/>
                 </mxCell>
-                <mxCell id="44" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;+ name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;+ quantity: int&amp;nbsp;&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" vertex="1" parent="43">
+                <mxCell id="44" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent;&quot;&gt;- name: string&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- quantity: int&amp;nbsp;&lt;/div&gt;" style="text;html=1;strokeColor=default;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" vertex="1" parent="43">
                     <mxGeometry y="29" width="130" height="51" as="geometry"/>
                 </mxCell>
                 <mxCell id="45" value="&amp;lt;&amp;lt;getter&amp;gt;&amp;gt;&lt;div&gt;getInfo()&lt;/div&gt;&lt;div&gt;&amp;lt;&amp;lt;setter&amp;gt;&amp;gt;&lt;/div&gt;&lt;div&gt;+ setName(name)&lt;/div&gt;&lt;div&gt;+ setQuantity(number)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" vertex="1" parent="43">
