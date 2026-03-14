@@ -1,4 +1,4 @@
-# Aktorok
+# Szerelőműhely dokumentáló web alkalmazás c#
 ## Munkafelvevő 
 ### Funkciók
 - Belépés (azonosítóval) / Kilépés
