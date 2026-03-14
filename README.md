@@ -17,6 +17,7 @@
     - lezárt munkalapot ki is nyomtathatja
 
 ## Szerelő
+### Funkciók
 - Belépés (azonosítóval) / Kilépés
 - Listázhatja a hozzá rendelt nem lezárt munkalapokat, és megnyithatja bármelyiket
 - A munkalapokra tetszőleges számú munkafolyamatot adhat hozzá
@@ -24,3 +25,10 @@
     - anyag (név, mennyiség)
     - alkatrész (név, mennyiség)
     - Az elemek kiválaszthatóak, csak az időtartamot, illetve a mennyiséget kell megadni
+
+## Use-case diagram
+![image](Docs/diagram.png)
+## Class-diagram
+![image](Docs/class_diagram.png)
+## Database schema
+![image](Docs/database.png)
