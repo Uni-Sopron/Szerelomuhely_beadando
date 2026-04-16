@@ -7,13 +7,13 @@ namespace SzereloMuhely.Models
     {
         public int ID { get; set; }
         [Required]
-        [DisplayName("Alkatrész neve")]
-        public string Name { get; set; }
+        [Display(Name = "Alkatrész neve")]
+        public string Name { get; set; } = null!;
         [Required]
-        [DisplayName("Alkatrész mennyisége")]
+        [Display(Name = "Alkatrész mennyisége")]
         public int Quantity { get; set; }
 
         public int WorkProcessID { get; set; }
-        public virtual WorkProcess WorkProcess { get; set; }
+        public virtual WorkProcess WorkProcess { get; set; } = null!;
     }
 }

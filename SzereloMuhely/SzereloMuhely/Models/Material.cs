@@ -7,13 +7,13 @@ namespace SzereloMuhely.Models
     {
         public int ID { get; set; }
         [Required]
-        [DisplayName("Anyag neve")]
-        public string Name { get; set; }
+        [Display(Name = "Anyag neve")]
+        public string Name { get; set; } = null!;
         [Required]
-        [DisplayName("Anyag mennyisége")]
+        [Display(Name = "Anyag mennyisége")]
         public int Quantity { get; set; }
 
         public int WorkProcessID { get; set; }
-        public virtual WorkProcess WorkProcess{ get; set; }
+        public virtual WorkProcess WorkProcess { get; set; } = null!;
     }
 }

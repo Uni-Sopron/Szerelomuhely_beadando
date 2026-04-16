@@ -7,10 +7,10 @@ namespace SzereloMuhely.Models
     {
         public int ID { get; set; }
         [Required]
-        [DisplayName("Felhasználónév")]
-        public string Username { get; set; }
+        [Display(Name = "Felhasználónév")]
+        public string Username { get; set; } = null!;
         [Required]
-        [DisplayName("Jelszó")]
-        public string Password { get; set; }
+        [Display(Name = "Jelszó")]
+        public string Password { get; set; } = null!;
     }
 }

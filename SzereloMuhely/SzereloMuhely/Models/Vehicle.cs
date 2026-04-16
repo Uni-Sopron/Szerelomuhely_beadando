@@ -7,23 +7,23 @@ namespace SzereloMuhely.Models
     {
         public int ID { get; set; }
         [Required]
-        [DisplayName("Rendszám")]
-        public string LicensePlate { get; set; }
+        [Display(Name = "Rendszám")]
+        public string LicensePlate { get; set; } = null!;
         [Required]
-        [DisplayName("Gyártó")]
-        public string Make { get; set; }
+        [Display(Name = "Gyártó")]
+        public string Make { get; set; } = null!;
         [Required]
-        [DisplayName("Típus")]
-        public string Model { get; set; }
+        [Display(Name = "Típus")]
+        public string Model { get; set; } = null!;
         [Required]
-        [DisplayName("Tulajdonos neve")]
-        public string OwnerName { get; set; }
+        [Display(Name = "Tulajdonos neve")]
+        public string OwnerName { get; set; } = null!;
         [Required]
-        [DisplayName("Tulajdonos címe")]
-        public string OwnerAddress { get; set; }
+        [Display(Name = "Tulajdonos címe")]
+        public string OwnerAddress { get; set; } = null!;
 
 
         public int WorkSheetID { get; set; }
-        public virtual WorkSheet WorkSheet { get; set; }
+        public virtual WorkSheet WorkSheet { get; set; } = null!;
     }
 }

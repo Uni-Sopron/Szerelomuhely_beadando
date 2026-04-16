@@ -7,18 +7,18 @@ namespace SzereloMuhely.Models
     {
         public int ID { get; set; }
         [Required]
-        [DisplayName("Munkalap címe")]
-        public string Title { get; set; }
+        [Display(Name = "Munkalap címe")]
+        public string Title { get; set; } = null!;
         [Required]
-        [DisplayName("Szerelő ID")]
+        [Display(Name = "Szerelő ID")]
         public int MechanicID { get; set; }
         [Required]
-        [DisplayName("Munkalap státusza")]
+        [Display(Name = "Munkalap státusza")]
         public bool Status { get; set; }
-        [DisplayName("Fizetés módja")]
-        public string PaymentMethod { get; set; }
+        [Display(Name = "Fizetés módja")]
+        public string PaymentMethod { get; set; } = null!;
 
-        public virtual Vehicle Vehicle { get; set; }
-        public virtual ICollection<WorkProcess> WorkProcesses { get; set; }
+        public virtual Vehicle Vehicle { get; set; } = null!;
+        public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = null!;
     }
 }
