@@ -1,3 +1,6 @@
+using SzereloMuhely.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace SzereloMuhely
 {
     public class Program
@@ -8,6 +11,10 @@ namespace SzereloMuhely
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDbContext<ServiceContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
+
 
             var app = builder.Build();
 
