@@ -14,9 +14,9 @@ namespace SzereloMuhely.Models
         public int MechanicID { get; set; }
         [Required]
         [Display(Name = "Munkalap státusza")]
-        public bool Status { get; set; }
+        public bool Status { get; set; } = true;
         [Display(Name = "Fizetés módja")]
-        public string PaymentMethod { get; set; } = null!;
+        public string? PaymentMethod { get; set; } = null!;
 
         public virtual Vehicle Vehicle { get; set; } = null!;
         public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = null!;
