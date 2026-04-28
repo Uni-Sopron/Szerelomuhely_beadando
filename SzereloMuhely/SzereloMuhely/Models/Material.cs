@@ -3,12 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SzereloMuhely.Models
 {
-    public class Material
+    public class Material : WorkItem
     {
-        public int ID { get; set; }
-        [Required]
-        [Display(Name = "Anyag neve")]
-        public string Name { get; set; } = null!;
         [Required]
         [Display(Name = "Anyag mennyisége")]
         public int Quantity { get; set; }

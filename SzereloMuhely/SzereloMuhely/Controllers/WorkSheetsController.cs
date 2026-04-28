@@ -20,9 +20,29 @@ namespace SzereloMuhely.Controllers
         }
 
         // GET: WorkSheets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, bool showAll = false)
         {
-            return View(await _context.WorkSheets.ToListAsync());
+            var query = _context.WorkSheets
+                .Include(w => w.Vehicle)
+                .Include(w => w.WorkProcesses)
+                .ThenInclude(wp => wp.Materials)
+                .Include(w => w.WorkProcesses)
+                .ThenInclude(wp => wp.Parts)
+                .AsQueryable();
+
+            if (!showAll)
+            {
+                query = query.Where(w => w.Status == true);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(w => w.Title.Contains(searchString) ||
+                                         w.Vehicle.LicensePlate.Contains(searchString) ||
+                                         w.Vehicle.OwnerName.Contains(searchString));
+            }
+
+            return View(await query.OrderByDescending(w => w.CreatedAt).ToListAsync());
         }
 
         // GET: WorkSheets/Details/5
@@ -54,10 +74,12 @@ namespace SzereloMuhely.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Title,MechanicID,Status,PaymentMethod")] WorkSheet workSheet)
+        public async Task<IActionResult> Create([Bind("ID,Title,MechanicID,RecruiterName")] WorkSheet workSheet)
         {
             if (ModelState.IsValid)
             {
+                workSheet.CreatedAt = DateTime.Now;
+                workSheet.Status = true;
                 _context.Add(workSheet);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -78,6 +100,12 @@ namespace SzereloMuhely.Controllers
             {
                 return NotFound();
             }
+
+            if (workSheet.IsClosed)
+            {
+                return BadRequest("Lezárt munkalap nem módosítható.");
+            }
+
             return View(workSheet);
         }
 
@@ -86,17 +114,25 @@ namespace SzereloMuhely.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,MechanicID,Status,PaymentMethod")] WorkSheet workSheet)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,MechanicID,RecruiterName")] WorkSheet workSheet)
         {
             if (id != workSheet.ID)
             {
                 return NotFound();
             }
 
+            var originalWorkSheet = await _context.WorkSheets.AsNoTracking().FirstOrDefaultAsync(w => w.ID == id);
+            if (originalWorkSheet == null) return NotFound();
+            if (!originalWorkSheet.Status) return BadRequest("Lezárt munkalap nem módosítható.");
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    workSheet.Status = originalWorkSheet.Status;
+                    workSheet.CreatedAt = originalWorkSheet.CreatedAt;
+                    workSheet.PaymentMethod = originalWorkSheet.PaymentMethod;
+
                     _context.Update(workSheet);
                     await _context.SaveChangesAsync();
                 }
@@ -152,6 +188,48 @@ namespace SzereloMuhely.Controllers
         private bool WorkSheetExists(int id)
         {
             return _context.WorkSheets.Any(e => e.ID == id);
+        }
+
+        // GET: WorkSheets/Close/5
+        public async Task<IActionResult> Close(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var workSheet = await _context.WorkSheets
+                .Include(w => w.Vehicle)
+                .Include(w => w.WorkProcesses)
+                .ThenInclude(wp => wp.Materials)
+                .Include(w => w.WorkProcesses)
+                .ThenInclude(wp => wp.Parts)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (workSheet == null) return NotFound();
+            if (workSheet.IsClosed) return BadRequest("A munkalap már le van zárva.");
+
+            return View(workSheet);
+        }
+
+        // POST: WorkSheets/Close/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Close(int id, string paymentMethod)
+        {
+            var workSheet = await _context.WorkSheets.FindAsync(id);
+            if (workSheet == null) return NotFound();
+            if (workSheet.IsClosed) return BadRequest("A munkalap már le van zárva.");
+
+            if (string.IsNullOrEmpty(paymentMethod))
+            {
+                ModelState.AddModelError("PaymentMethod", "A fizetési mód megadása kötelező.");
+                return View(workSheet);
+            }
+
+            workSheet.Status = false; // Closed
+            workSheet.PaymentMethod = paymentMethod;
+            _context.Update(workSheet);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
