@@ -44,7 +44,11 @@ namespace SzereloMuhely.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-            ViewData["WorkSheetID"] = new SelectList(_context.WorkSheets, "ID", "Title");
+            var assignedWorkSheetIds = _context.Vehicles.Select(v => v.WorkSheetID).ToList();
+            var freeWorkSheets = _context.WorkSheets
+                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID))
+                .ToList();
+            ViewData["WorkSheetID"] = new SelectList(freeWorkSheets, "ID", "Title");
             return View();
         }
 
