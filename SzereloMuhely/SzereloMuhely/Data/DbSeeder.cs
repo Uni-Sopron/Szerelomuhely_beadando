@@ -40,8 +40,7 @@ namespace SzereloMuhely.Data
                     MechanicID = 3,
                     RecruiterName = "Szabó Mari",
                     CreatedAt = DateTime.Now.AddDays(-5),
-                    Status = false,
-                    PaymentMethod = "Készpénz"
+                    Status = false
                 },
                 new WorkSheet
                 {
@@ -49,6 +48,14 @@ namespace SzereloMuhely.Data
                     MechanicID = 1,
                     RecruiterName = "Kovács Béla",
                     CreatedAt = DateTime.Now.AddHours(-3),
+                    Status = true
+                },
+                new WorkSheet
+                {
+                    Title = "Kerékcsere - SWT-423",
+                    MechanicID = 1,
+                    RecruiterName = "Szabó Mari",
+                    CreatedAt = DateTime.Now.AddDays(-5),
                     Status = true
                 }
             };
@@ -75,6 +82,12 @@ namespace SzereloMuhely.Data
                     LicensePlate = "GHI-456", Make = "Ford", Model = "Focus",
                     OwnerName = "Varga László", OwnerAddress = "Szeged, Tisza sor 5.",
                     WorkSheetID = workSheets[2].ID
+                },
+                new Vehicle
+                {
+                    LicensePlate = "SWT-423", Make = "Suzuki", Model = "Swift",
+                    OwnerName = "Horváth Zoltán", OwnerAddress = "Pécs, Rákóczi út 20.",
+                    WorkSheetID = workSheets[3].ID
                 }
             };
             context.Vehicles.AddRange(vehicles);
@@ -122,6 +135,27 @@ namespace SzereloMuhely.Data
             context.Materials.Add(new Material { Name = "Motorolaj 5W30", Price = 4500, Quantity = 5, WorkProcessID = wp3.ID });
             context.Parts.Add(new Part { Name = "Olajszűrő", Price = 3800, Quantity = 1, WorkProcessID = wp3.ID });
 
+            context.SaveChanges();
+            var wp4 = new WorkProcess
+            {
+                Name = "Kerékcsere",
+                Price = 10000,
+                Duration = 1,
+                WorkSheetID = workSheets[3].ID
+            };
+            var vp5 = new WorkProcess
+            {
+                Name = "Új gumik felrakása",
+                Price = 5000,
+                Duration = 1,
+                WorkSheetID = workSheets[3].ID
+            };
+            context.WorkProcesses.Add(wp4);
+            context.WorkProcesses.Add(vp5);
+            context.SaveChanges();
+
+            context.Materials.Add(new Material { Name = "Kerékcsavar", Price = 1000, Quantity = 4, WorkProcessID = wp4.ID });
+            context.Parts.Add(new Part { Name = "Gumiabroncs", Price = 30000, Quantity = 4, WorkProcessID = vp5.ID });
             context.SaveChanges();
         }
     }
