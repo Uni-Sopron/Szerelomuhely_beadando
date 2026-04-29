@@ -55,6 +55,7 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Name,Quantity,WorkProcessID")] Part part)
         {
+            ModelState.Remove("WorkProcess");
             if (ModelState.IsValid)
             {
                 _context.Add(part);
@@ -93,6 +94,8 @@ namespace SzereloMuhely.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("WorkProcess");
 
             if (ModelState.IsValid)
             {

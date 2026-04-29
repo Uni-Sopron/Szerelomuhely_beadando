@@ -55,6 +55,7 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,LicensePlate,Make,Model,OwnerName,OwnerAddress,WorkSheetID")] Vehicle vehicle)
         {
+            ModelState.Remove("WorkSheet");
             if (ModelState.IsValid)
             {
                 _context.Add(vehicle);

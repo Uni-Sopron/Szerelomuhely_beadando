@@ -9,7 +9,7 @@ namespace SzereloMuhely.Models
         public int Duration { get; set; }
 
         public int WorkSheetID { get; set; }
-        public virtual WorkSheet WorkSheet { get; set; } = null!;
+        public virtual WorkSheet? WorkSheet { get; set; }
 
         public virtual ICollection<Part> Parts { get; set; } = new List<Part>();
         public virtual ICollection<Material> Materials { get; set; } = new List<Material>();

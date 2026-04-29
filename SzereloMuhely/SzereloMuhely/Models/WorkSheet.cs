@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace SzereloMuhely.Models
 {
@@ -26,7 +27,7 @@ namespace SzereloMuhely.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Display(Name = "Fizetés módja")]
-        public string? PaymentMethod { get; set; } = null!;
+        public string? PaymentMethod { get; set; } = null;
 
         [Display(Name = "Összesített ár")]
         public decimal TotalAmount
@@ -37,8 +38,7 @@ namespace SzereloMuhely.Models
                 return WorkProcesses.Sum(wp => wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity));
             }
         }
-
-        public virtual Vehicle Vehicle { get; set; } = null!;
-        public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = null!;
+        public virtual Vehicle? Vehicle { get; set; }
+        public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = new List<WorkProcess>();
     }
 }

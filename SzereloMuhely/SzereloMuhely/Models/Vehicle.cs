@@ -23,6 +23,6 @@ namespace SzereloMuhely.Models
 
 
         public int WorkSheetID { get; set; }
-        public virtual WorkSheet WorkSheet { get; set; } = null!;
+        public virtual WorkSheet? WorkSheet { get; set; }
     }
 }

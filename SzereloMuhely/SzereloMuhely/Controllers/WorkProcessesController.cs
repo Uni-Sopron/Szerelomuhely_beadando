@@ -55,6 +55,7 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Name,Duration,WorkSheetID")] WorkProcess workProcess)
         {
+            ModelState.Remove("WorkSheet");
             if (ModelState.IsValid)
             {
                 _context.Add(workProcess);
@@ -93,6 +94,8 @@ namespace SzereloMuhely.Controllers
             {
                 return NotFound();
             }
+
+            ModelState.Remove("WorkSheet");
 
             if (ModelState.IsValid)
             {

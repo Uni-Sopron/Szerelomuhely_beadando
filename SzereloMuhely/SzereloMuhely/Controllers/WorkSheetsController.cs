@@ -73,14 +73,22 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Title,MechanicID,RecruiterName")] WorkSheet workSheet)
         {
+            workSheet.RecruiterName = "Szabó Mari";
+            workSheet.CreatedAt = DateTime.Now;
+            workSheet.Status = true;
+
+            ModelState.Remove("RecruiterName");
+            ModelState.Remove("CreatedAt");
+            ModelState.Remove("Vehicle");
+            ModelState.Remove("WorkProcesses");
+
             if (ModelState.IsValid)
             {
-                workSheet.CreatedAt = DateTime.Now;
-                workSheet.Status = true;
                 _context.Add(workSheet);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
             return View(workSheet);
         }
 

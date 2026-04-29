@@ -9,6 +9,6 @@ namespace SzereloMuhely.Models
         public int Quantity { get; set; }
 
         public int WorkProcessID { get; set; }
-        public virtual WorkProcess WorkProcess { get; set; } = null!;
+        public virtual WorkProcess? WorkProcess { get; set; }
     }
 }
