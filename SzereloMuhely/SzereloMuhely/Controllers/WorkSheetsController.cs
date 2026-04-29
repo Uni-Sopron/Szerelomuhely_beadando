@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SzereloMuhely.Data;
@@ -66,6 +62,7 @@ namespace SzereloMuhely.Controllers
         // GET: WorkSheets/Create
         public IActionResult Create()
         {
+            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username");
             return View();
         }
 
@@ -105,7 +102,7 @@ namespace SzereloMuhely.Controllers
             {
                 return BadRequest("Lezárt munkalap nem módosítható.");
             }
-
+            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
             return View(workSheet);
         }
 
