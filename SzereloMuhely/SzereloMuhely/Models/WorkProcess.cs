@@ -9,6 +9,7 @@ namespace SzereloMuhely.Models
         public int Duration { get; set; }
 
         public int WorkSheetID { get; set; }
+        [Display(Name = "Munkalap")]
         public virtual WorkSheet? WorkSheet { get; set; }
 
         public virtual ICollection<Part> Parts { get; set; } = new List<Part>();

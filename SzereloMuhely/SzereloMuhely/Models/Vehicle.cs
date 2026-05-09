@@ -23,6 +23,7 @@ namespace SzereloMuhely.Models
 
 
         public int WorkSheetID { get; set; }
+        [Display(Name = "Munkalap")]
         public virtual WorkSheet? WorkSheet { get; set; }
     }
 }

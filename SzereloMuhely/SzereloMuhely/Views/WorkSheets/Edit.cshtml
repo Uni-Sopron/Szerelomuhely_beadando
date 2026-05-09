@@ -1,12 +1,12 @@
 ﻿@model SzereloMuhely.Models.WorkSheet
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Módosítás";
 }
 
-<h1>Edit</h1>
+<h1>Módosítás</h1>
 
-<h4>WorkSheet</h4>
+<h4>Munkalap</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,11 +19,11 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MechanicID" class="control-label"></label>
+                <label asp-for="MechanicID" class="control-label">Szerelő</label>
                 <select asp-for="MechanicID" class="form-control" asp-items="ViewBag.MechanicID"></select>
                 <span asp-validation-for="MechanicID" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+            <div class="form-group form-check m-1 d-flex justify-content-center">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
                 </label>
@@ -33,15 +33,15 @@
                 <input asp-for="PaymentMethod" class="form-control" />
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group m-2 d-flex justify-content-center">
+                <input type="submit" value="Mentés" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Vissza</a>
 </div>
 
 @section Scripts {

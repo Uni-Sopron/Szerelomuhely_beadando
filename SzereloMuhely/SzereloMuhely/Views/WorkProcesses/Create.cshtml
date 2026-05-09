@@ -1,12 +1,12 @@
 ﻿@model SzereloMuhely.Models.WorkProcess
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Létrehozás";
 }
 
-<h1>Create</h1>
+<h1>Létrehozás</h1>
 
-<h4>WorkProcess</h4>
+<h4>Munkafolyamat</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -23,18 +23,18 @@
                 <span asp-validation-for="Duration" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="WorkSheetID" class="control-label"></label>
+                <label asp-for="WorkSheetID" class="control-label">Munkalap</label>
                 <select asp-for="WorkSheetID" class ="form-control" asp-items="ViewBag.WorkSheetID"></select>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-group m-2 d-flex justify-content-center">
+                <input type="submit" value="Létrehozás" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Vissza</a>
 </div>
 
 @section Scripts {
