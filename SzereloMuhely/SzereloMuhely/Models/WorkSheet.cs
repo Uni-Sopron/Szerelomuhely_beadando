@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SzereloMuhely.Models
 {
@@ -10,10 +11,10 @@ namespace SzereloMuhely.Models
         [Display(Name = "Munkalap címe")]
         public string Title { get; set; } = null!;
         [Required]
-        [Display(Name = "Szerelő ID")]
+        [Display(Name = "Szerelő")]
         public int MechanicID { get; set; }
         [Required]
-        [Display(Name = "Munkalap státusza")]
+        [Display(Name = "Munkalap nyitott")]
         public bool Status { get; set; } = true;
 
         public bool IsClosed => !Status;
@@ -38,6 +39,9 @@ namespace SzereloMuhely.Models
                 return WorkProcesses.Sum(wp => wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity));
             }
         }
+        [ForeignKey("MechanicID")]
+        [ValidateNever]
+        public virtual User? Mechanic { get; set; }
         public virtual Vehicle? Vehicle { get; set; }
         public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = new List<WorkProcess>();
     }

@@ -19,6 +19,7 @@ namespace SzereloMuhely.Controllers
         public async Task<IActionResult> Index(string? searchString, bool showAll = false)
         {
             var query = _context.WorkSheets
+                .Include(w => w.Mechanic)
                 .Include(w => w.Vehicle)
                 .Include(w => w.WorkProcesses)
                 .ThenInclude(wp => wp.Materials)
@@ -126,19 +127,21 @@ namespace SzereloMuhely.Controllers
                 return NotFound();
             }
 
-            var originalWorkSheet = await _context.WorkSheets.AsNoTracking().FirstOrDefaultAsync(w => w.ID == id);
-            if (originalWorkSheet == null) return NotFound();
-            if (!originalWorkSheet.Status) return BadRequest("Lezárt munkalap nem módosítható.");
+            ModelState.Remove("Vehicle");
+            ModelState.Remove("WorkProcesses");
+            ModelState.Remove("RecruiterName");
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    workSheet.Status = originalWorkSheet.Status;
-                    workSheet.CreatedAt = originalWorkSheet.CreatedAt;
-                    workSheet.PaymentMethod = originalWorkSheet.PaymentMethod;
+                    var originalWorkSheet = await _context.WorkSheets.FindAsync(id);
+                    if (originalWorkSheet == null) return NotFound();
 
-                    _context.Update(workSheet);
+                    originalWorkSheet.Title = workSheet.Title;
+                    originalWorkSheet.MechanicID = workSheet.MechanicID;
+
+                    _context.Update(originalWorkSheet);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -154,6 +157,7 @@ namespace SzereloMuhely.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
             return View(workSheet);
         }
 
