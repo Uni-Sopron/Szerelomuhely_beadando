@@ -142,6 +142,7 @@ namespace SzereloMuhely.Controllers
             ModelState.Remove("Mehanic");
             ModelState.Remove("Vehicle");
             ModelState.Remove("WorkProcesses");
+            ModelState.Remove("RecruiterName");
 
             if (ModelState.IsValid)
             {

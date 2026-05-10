@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Diagnostics.Metrics;
 using SzereloMuhely.Models;
 
 namespace SzereloMuhely.Data
@@ -15,35 +16,21 @@ namespace SzereloMuhely.Data
             }
 
             // 1. Felhasználók létrehozása Identity-vel
-            // Megnézzük, létezik-e már a teszt felhasználó
-            var mechanicEmail = "kovacs.janos@muhely.hu";
-            var mechanic2Email = "toth.peter@muhely.hu";
-            var recruiterEmail = "mester.bela@muhely.hu";
-            var adminEmail = "admin@muhely.hu";
+            var user1 = new IdentityUser { UserName = "KovacsJanos", Email = "kovacs.janos@muhely.hu", EmailConfirmed = true };
+            var user2 = new IdentityUser { UserName = "TothPeter", Email = "toth.peter@muhely.hu", EmailConfirmed = true };
+            var user3 = new IdentityUser { UserName = "MesterBela", Email = "mester.bela@muhely.hu", EmailConfirmed = true };
+            var user4 = new IdentityUser { UserName = "Admin", Email = "admin@muhely.hu", EmailConfirmed = true };
 
-            var mechanicName = "Kovács János";
-            var mechanic2Name = "Tóth Péter";
-            var recruiterName = "Mester Béla";
-            var adminName = "Admin";
-
-            if (await userManager.FindByEmailAsync(mechanicEmail) == null)
-            {
-                var user1 = new IdentityUser { UserName = mechanicName, Email = mechanicEmail, EmailConfirmed = true };
-                var user2 = new IdentityUser { UserName = mechanic2Name, Email = mechanic2Email, EmailConfirmed = true };
-                var user3 = new IdentityUser { UserName = recruiterName, Email = recruiterEmail, EmailConfirmed = true };
-                var user4 = new IdentityUser { UserName = adminName, Email = adminEmail, EmailConfirmed = true };
-
-                await userManager.CreateAsync(user1, "Password123!");
-                await userManager.CreateAsync(user2, "Password123!");
-                await userManager.CreateAsync(user3, "Password123!");
-                await userManager.CreateAsync(user4, "Password123!");
-            }
+            await userManager.CreateAsync(user1, "Password123!");
+            await userManager.CreateAsync(user2, "Password123!");
+            await userManager.CreateAsync(user3, "Password123!");
+            await userManager.CreateAsync(user4, "Password123!");
 
             // Lekérjük a generált ID-kat az adatbázisból a munkalapokhoz
-            var mechanic1 = await userManager.FindByEmailAsync(mechanicEmail);
-            var mechanic2 = await userManager.FindByEmailAsync(mechanic2Email);
-            var recruiter = await userManager.FindByEmailAsync(recruiterEmail);
-            var admin = await userManager.FindByEmailAsync(adminEmail);
+            var mechanic1 = await userManager.FindByEmailAsync(user1.Email);
+            var mechanic2 = await userManager.FindByEmailAsync(user2.Email);
+            var recruiter = await userManager.FindByEmailAsync(user3.Email);
+            var admin = await userManager.FindByEmailAsync(user4.Email);
 
             // 2. Seed WorkSheets
             var workSheets = new WorkSheet[]
@@ -52,7 +39,7 @@ namespace SzereloMuhely.Data
                 {
                     Title = "Éves szerviz - ABC-123",
                     MechanicID = mechanic1!.Id,
-                    RecruiterName = recruiterName,
+                    RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-2),
                     Status = true
                 },
@@ -60,7 +47,7 @@ namespace SzereloMuhely.Data
                 {
                     Title = "Fékjavítás - XYZ-987",
                     MechanicID = mechanic2!.Id,
-                    RecruiterName = recruiterName,
+                    RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-5),
                     Status = false
                 },
@@ -68,7 +55,7 @@ namespace SzereloMuhely.Data
                 {
                     Title = "Olajcsere - GHI-456",
                     MechanicID = mechanic1.Id,
-                    RecruiterName = recruiterName,
+                    RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddHours(-3),
                     Status = true
                 },
@@ -76,7 +63,7 @@ namespace SzereloMuhely.Data
                 {
                     Title = "Kerékcsere - SWT-423",
                     MechanicID = mechanic1.Id,
-                    RecruiterName = recruiterName,
+                    RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-5),
                     Status = true
                 }

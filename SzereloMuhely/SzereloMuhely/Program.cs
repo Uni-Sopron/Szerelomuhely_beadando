@@ -6,12 +6,10 @@ namespace SzereloMuhely
 {
     public class Program
     {
-        // 1. Módosítás: Task-ra és async-re váltunk, hogy tudjuk await-elni a seedert
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<ServiceContext>(options =>
@@ -38,17 +36,21 @@ namespace SzereloMuhely
                 try
                 {
                     var context = services.GetRequiredService<ServiceContext>();
-
-                    // 2. Módosítás: Kérjük el a UserManager-t is a DI konténerből
+                    var identityContext = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-                    // 3. Módosítás: Átadjuk a userManager-t és await-eljük a hívást
+                    await context.Database.EnsureDeletedAsync();
+                    await identityContext.Database.EnsureDeletedAsync();
+
+                    await context.Database.EnsureCreatedAsync();
+                    await identityContext.Database.EnsureCreatedAsync();
+
                     await DbSeeder.Initialize(context, userManager);
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
+                    logger.LogError(ex, "Hiba történt az adatbázis seed-elése közben.");
                 }
             }
 
@@ -72,7 +74,6 @@ namespace SzereloMuhely
 
             app.MapRazorPages();
 
-            // 4. Módosítás: Mivel a Main async lett, ide RunAsync() kell
             await app.RunAsync();
         }
     }
