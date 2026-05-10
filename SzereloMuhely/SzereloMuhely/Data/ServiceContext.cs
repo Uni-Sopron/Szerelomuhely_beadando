@@ -5,7 +5,6 @@ namespace SzereloMuhely.Data
 {
     public class ServiceContext : DbContext
     {
-        public DbSet<Models.User> Users { get; set; } = null!;
         public DbSet<Models.WorkItem> WorkItems { get; set; } = null!;
         public DbSet<Models.WorkSheet> WorkSheets { get; set; } = null!;
         public DbSet<Models.WorkProcess> WorkProcesses { get; set; } = null!;
@@ -35,6 +34,10 @@ namespace SzereloMuhely.Data
                 .WithOne(p => p.WorkProcess)
                 .HasForeignKey(p => p.WorkProcessID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<WorkSheet>()
+                .Property(w => w.MechanicID)
+                .HasColumnType("nvarchar(450)");
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {

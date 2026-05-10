@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace SzereloMuhely.Models
 {
@@ -12,7 +13,7 @@ namespace SzereloMuhely.Models
         public string Title { get; set; } = null!;
         [Required]
         [Display(Name = "Szerelő")]
-        public int MechanicID { get; set; }
+        public string MechanicID { get; set; } = null!;
         [Required]
         [Display(Name = "Munkalap nyitott")]
         public bool Status { get; set; } = true;
@@ -39,9 +40,9 @@ namespace SzereloMuhely.Models
                 return WorkProcesses.Sum(wp => wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity));
             }
         }
-        [ForeignKey("MechanicID")]
         [ValidateNever]
-        public virtual User? Mechanic { get; set; }
+        [NotMapped]
+        public virtual IdentityUser? Mechanic { get; set; }
         public virtual Vehicle? Vehicle { get; set; }
         public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = new List<WorkProcess>();
     }

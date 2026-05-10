@@ -6,7 +6,8 @@ namespace SzereloMuhely
 {
     public class Program
     {
-        public static void Main(string[] args)
+        // 1. Módosítás: Task-ra és async-re váltunk, hogy tudjuk await-elni a seedert
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +26,7 @@ namespace SzereloMuhely
             })
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services.AddRazorPages(); 
+            builder.Services.AddRazorPages();
 
 
             var app = builder.Build();
@@ -37,7 +38,12 @@ namespace SzereloMuhely
                 try
                 {
                     var context = services.GetRequiredService<ServiceContext>();
-                    DbSeeder.Initialize(context);
+
+                    // 2. Módosítás: Kérjük el a UserManager-t is a DI konténerből
+                    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+                    // 3. Módosítás: Átadjuk a userManager-t és await-eljük a hívást
+                    await DbSeeder.Initialize(context, userManager);
                 }
                 catch (Exception ex)
                 {
@@ -50,7 +56,6 @@ namespace SzereloMuhely
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -67,7 +72,8 @@ namespace SzereloMuhely
 
             app.MapRazorPages();
 
-            app.Run();
+            // 4. Módosítás: Mivel a Main async lett, ide RunAsync() kell
+            await app.RunAsync();
         }
     }
 }

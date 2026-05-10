@@ -1,10 +1,11 @@
-﻿using SzereloMuhely.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using SzereloMuhely.Models;
 
 namespace SzereloMuhely.Data
 {
     public static class DbSeeder
     {
-        public static void Initialize(ServiceContext context)
+        public static async Task Initialize(ServiceContext context, UserManager<IdentityUser> userManager)
         {
             context.Database.EnsureCreated();
 
@@ -13,15 +14,36 @@ namespace SzereloMuhely.Data
                 return;
             }
 
-            // 1. Seed Users (Mechanics and Recruiters)
-            var users = new User[]
+            // 1. Felhasználók létrehozása Identity-vel
+            // Megnézzük, létezik-e már a teszt felhasználó
+            var mechanicEmail = "kovacs.janos@muhely.hu";
+            var mechanic2Email = "toth.peter@muhely.hu";
+            var recruiterEmail = "mester.bela@muhely.hu";
+            var adminEmail = "admin@muhely.hu";
+
+            var mechanicName = "Kovács János";
+            var mechanic2Name = "Tóth Péter";
+            var recruiterName = "Mester Béla";
+            var adminName = "Admin";
+
+            if (await userManager.FindByEmailAsync(mechanicEmail) == null)
             {
-                new User { Username = "kovacs.janos", Password = "password123" }, // Mechanic ID: 1
-                new User { Username = "szabo.mari", Password = "password123" },  // Recruiter ID: 2
-                new User { Username = "toth.peter", Password = "password123" }   // Mechanic ID: 3
-            };
-            context.Users.AddRange(users);
-            context.SaveChanges();
+                var user1 = new IdentityUser { UserName = mechanicName, Email = mechanicEmail, EmailConfirmed = true };
+                var user2 = new IdentityUser { UserName = mechanic2Name, Email = mechanic2Email, EmailConfirmed = true };
+                var user3 = new IdentityUser { UserName = recruiterName, Email = recruiterEmail, EmailConfirmed = true };
+                var user4 = new IdentityUser { UserName = adminName, Email = adminEmail, EmailConfirmed = true };
+
+                await userManager.CreateAsync(user1, "Password123!");
+                await userManager.CreateAsync(user2, "Password123!");
+                await userManager.CreateAsync(user3, "Password123!");
+                await userManager.CreateAsync(user4, "Password123!");
+            }
+
+            // Lekérjük a generált ID-kat az adatbázisból a munkalapokhoz
+            var mechanic1 = await userManager.FindByEmailAsync(mechanicEmail);
+            var mechanic2 = await userManager.FindByEmailAsync(mechanic2Email);
+            var recruiter = await userManager.FindByEmailAsync(recruiterEmail);
+            var admin = await userManager.FindByEmailAsync(adminEmail);
 
             // 2. Seed WorkSheets
             var workSheets = new WorkSheet[]
@@ -29,32 +51,32 @@ namespace SzereloMuhely.Data
                 new WorkSheet
                 {
                     Title = "Éves szerviz - ABC-123",
-                    MechanicID = 1,
-                    RecruiterName = "Szabó Mari",
+                    MechanicID = mechanic1!.Id,
+                    RecruiterName = recruiterName,
                     CreatedAt = DateTime.Now.AddDays(-2),
                     Status = true
                 },
                 new WorkSheet
                 {
                     Title = "Fékjavítás - XYZ-987",
-                    MechanicID = 3,
-                    RecruiterName = "Szabó Mari",
+                    MechanicID = mechanic2!.Id,
+                    RecruiterName = recruiterName,
                     CreatedAt = DateTime.Now.AddDays(-5),
                     Status = false
                 },
                 new WorkSheet
                 {
                     Title = "Olajcsere - GHI-456",
-                    MechanicID = 1,
-                    RecruiterName = "Kovács Béla",
+                    MechanicID = mechanic1.Id,
+                    RecruiterName = recruiterName,
                     CreatedAt = DateTime.Now.AddHours(-3),
                     Status = true
                 },
                 new WorkSheet
                 {
                     Title = "Kerékcsere - SWT-423",
-                    MechanicID = 1,
-                    RecruiterName = "Szabó Mari",
+                    MechanicID = mechanic1.Id,
+                    RecruiterName = recruiterName,
                     CreatedAt = DateTime.Now.AddDays(-5),
                     Status = true
                 }

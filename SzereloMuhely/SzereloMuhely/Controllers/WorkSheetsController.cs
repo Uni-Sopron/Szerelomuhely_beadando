@@ -9,22 +9,22 @@ namespace SzereloMuhely.Controllers
     public class WorkSheetsController : Controller
     {
         private readonly ServiceContext _context;
+        private readonly ApplicationDbContext _identityContext;
 
-        public WorkSheetsController(ServiceContext context)
+        public WorkSheetsController(ServiceContext context, ApplicationDbContext identityContext)
         {
             _context = context;
+            _identityContext = identityContext;
         }
 
         // GET: WorkSheets
         public async Task<IActionResult> Index(string? searchString, bool showAll = false)
         {
+            // 1. Kivesszük az .Include(w => w.Mechanic)-ot, mert az SQL már nem látja
             var query = _context.WorkSheets
-                .Include(w => w.Mechanic)
                 .Include(w => w.Vehicle)
-                .Include(w => w.WorkProcesses)
-                .ThenInclude(wp => wp.Materials)
-                .Include(w => w.WorkProcesses)
-                .ThenInclude(wp => wp.Parts)
+                .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Materials)
+                .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Parts)
                 .AsQueryable();
 
             if (!showAll)
@@ -39,23 +39,35 @@ namespace SzereloMuhely.Controllers
                                          w.Vehicle.OwnerName.Contains(searchString));
             }
 
-            return View(await query.OrderByDescending(w => w.CreatedAt).ToListAsync());
+            var workSheets = await query.OrderByDescending(w => w.CreatedAt).ToListAsync();
+
+            // 2. MANUÁLIS ÖSSZEKÖTÉS: Lekérjük a júzereket az IdentityContext-ből
+            var users = await _identityContext.Users.ToListAsync();
+            foreach (var ws in workSheets)
+            {
+                // A MechanicID (string) alapján megkeressük a júzert az Identity táblából
+                ws.Mechanic = users.FirstOrDefault(u => u.Id == ws.MechanicID);
+            }
+
+            return View(workSheets);
         }
 
         // GET: WorkSheets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var workSheet = await _context.WorkSheets
+                .Include(w => w.Vehicle)
+                .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Materials)
+                .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Parts)
                 .FirstOrDefaultAsync(m => m.ID == id);
-            if (workSheet == null)
-            {
-                return NotFound();
-            }
+
+            if (workSheet == null) return NotFound();
+
+            // Szerelő manuális betöltése
+            workSheet.Mechanic = await _identityContext.Users
+                .FirstOrDefaultAsync(u => u.Id == workSheet.MechanicID);
 
             return View(workSheet);
         }
@@ -63,7 +75,7 @@ namespace SzereloMuhely.Controllers
         // GET: WorkSheets/Create
         public IActionResult Create()
         {
-            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username");
+            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
             return View();
         }
 
@@ -78,10 +90,10 @@ namespace SzereloMuhely.Controllers
             workSheet.CreatedAt = DateTime.Now;
             workSheet.Status = true;
 
-            ModelState.Remove("RecruiterName");
-            ModelState.Remove("CreatedAt");
             ModelState.Remove("Vehicle");
             ModelState.Remove("WorkProcesses");
+            ModelState.Remove("Mechanic");
+            ModelState.Remove("RecruiterName");
 
             if (ModelState.IsValid)
             {
@@ -89,7 +101,7 @@ namespace SzereloMuhely.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
+            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
             return View(workSheet);
         }
 
@@ -111,7 +123,7 @@ namespace SzereloMuhely.Controllers
             {
                 return BadRequest("Lezárt munkalap nem módosítható.");
             }
-            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
+            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
             return View(workSheet);
         }
 
@@ -127,9 +139,9 @@ namespace SzereloMuhely.Controllers
                 return NotFound();
             }
 
+            ModelState.Remove("Mehanic");
             ModelState.Remove("Vehicle");
             ModelState.Remove("WorkProcesses");
-            ModelState.Remove("RecruiterName");
 
             if (ModelState.IsValid)
             {
@@ -157,7 +169,7 @@ namespace SzereloMuhely.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MechanicID"] = new SelectList(_context.Users, "ID", "Username", workSheet.MechanicID);
+            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
             return View(workSheet);
         }
 
