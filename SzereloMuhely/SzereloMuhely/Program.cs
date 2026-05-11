@@ -23,6 +23,7 @@ namespace SzereloMuhely
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
                 options.SignIn.RequireConfirmedAccount = false;
             })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             builder.Services.AddRazorPages();
@@ -39,6 +40,7 @@ namespace SzereloMuhely
                     var context = services.GetRequiredService<ServiceContext>();
                     var identityContext = services.GetRequiredService<ApplicationDbContext>();
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>(); 
 
                     await context.Database.EnsureDeletedAsync();
                     await identityContext.Database.EnsureDeletedAsync();
@@ -46,7 +48,7 @@ namespace SzereloMuhely
                     await context.Database.EnsureCreatedAsync();
                     await identityContext.Database.EnsureCreatedAsync();
 
-                    await DbSeeder.Initialize(context, userManager);
+                    await DbSeeder.Initialize(context, userManager, roleManager);
                 }
                 catch (Exception ex)
                 {

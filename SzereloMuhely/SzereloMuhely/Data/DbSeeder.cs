@@ -6,27 +6,42 @@ namespace SzereloMuhely.Data
 {
     public static class DbSeeder
     {
-        public static async Task Initialize(ServiceContext context, UserManager<IdentityUser> userManager)
+        public static async Task Initialize(ServiceContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             context.Database.EnsureCreated();
+
+            string[] roles = { "Admin", "Mechanic", "Recruiter" };
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
 
             if (context.WorkSheets.Any())
             {
                 return;
             }
 
-            // 1. Felhasználók létrehozása Identity-vel
+
+            // 1. Create users with Identity
             var user1 = new IdentityUser { UserName = "KovacsJanos", Email = "kovacs.janos@muhely.hu", EmailConfirmed = true };
             var user2 = new IdentityUser { UserName = "TothPeter", Email = "toth.peter@muhely.hu", EmailConfirmed = true };
             var user3 = new IdentityUser { UserName = "MesterBela", Email = "mester.bela@muhely.hu", EmailConfirmed = true };
             var user4 = new IdentityUser { UserName = "Admin", Email = "admin@muhely.hu", EmailConfirmed = true };
 
-            await userManager.CreateAsync(user1, "Password123!");
-            await userManager.CreateAsync(user2, "Password123!");
-            await userManager.CreateAsync(user3, "Password123!");
-            await userManager.CreateAsync(user4, "Password123!");
+            await userManager.CreateAsync(user1, "Jelszo123!");
+            await userManager.CreateAsync(user2, "Jelszo123!");
+            await userManager.CreateAsync(user3, "Jelszo123!");
+            await userManager.CreateAsync(user4, "Jelszo123!");
 
-            // Lekérjük a generált ID-kat az adatbázisból a munkalapokhoz
+            await userManager.AddToRoleAsync(user1, "Mechanic");
+            await userManager.AddToRoleAsync(user2, "Mechanic");
+            await userManager.AddToRoleAsync(user3, "Recruiter");
+            await userManager.AddToRoleAsync(user4, "Admin");
+
+            // Get IDs from Db for the worksheets
             var mechanic1 = await userManager.FindByEmailAsync(user1.Email);
             var mechanic2 = await userManager.FindByEmailAsync(user2.Email);
             var recruiter = await userManager.FindByEmailAsync(user3.Email);

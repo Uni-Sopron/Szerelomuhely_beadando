@@ -124,6 +124,9 @@ namespace SzereloMuhely.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    // Default role assignment for new users
+                    await _userManager.AddToRoleAsync(user, "Mechanic");
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);

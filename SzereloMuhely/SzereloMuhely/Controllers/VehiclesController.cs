@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SzereloMuhely.Data;
@@ -6,6 +7,7 @@ using SzereloMuhely.Models;
 
 namespace SzereloMuhely.Controllers
 {
+    [Authorize(Roles = "Admin,Mechanic")]
     public class VehiclesController : Controller
     {
         private readonly ServiceContext _context;
