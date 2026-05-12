@@ -42,8 +42,8 @@ namespace SzereloMuhely
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>(); 
 
-                    await context.Database.EnsureDeletedAsync();
-                    await identityContext.Database.EnsureDeletedAsync();
+                    //await context.Database.EnsureDeletedAsync();
+                    //await identityContext.Database.EnsureDeletedAsync();
 
                     await context.Database.EnsureCreatedAsync();
                     await identityContext.Database.EnsureCreatedAsync();

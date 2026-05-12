@@ -52,7 +52,7 @@ namespace SzereloMuhely.Data
             {
                 new WorkSheet
                 {
-                    Title = "Éves szerviz - ABC-123",
+                    Title = "Éves szerviz",
                     MechanicID = mechanic1!.Id,
                     RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-2),
@@ -60,7 +60,7 @@ namespace SzereloMuhely.Data
                 },
                 new WorkSheet
                 {
-                    Title = "Fékjavítás - XYZ-987",
+                    Title = "Fékjavítás",
                     MechanicID = mechanic2!.Id,
                     RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-5),
@@ -68,7 +68,7 @@ namespace SzereloMuhely.Data
                 },
                 new WorkSheet
                 {
-                    Title = "Olajcsere - GHI-456",
+                    Title = "Olajcsere",
                     MechanicID = mechanic1.Id,
                     RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddHours(-3),
@@ -76,7 +76,7 @@ namespace SzereloMuhely.Data
                 },
                 new WorkSheet
                 {
-                    Title = "Kerékcsere - SWT-423",
+                    Title = "Kerékcsere",
                     MechanicID = mechanic1.Id,
                     RecruiterName = recruiter.UserName,
                     CreatedAt = DateTime.Now.AddDays(-5),
