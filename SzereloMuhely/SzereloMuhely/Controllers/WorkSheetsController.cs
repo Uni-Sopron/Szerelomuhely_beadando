@@ -22,14 +22,19 @@ namespace SzereloMuhely.Controllers
         // GET: WorkSheets
         public async Task<IActionResult> Index(string? searchString, bool showAll = false)
         {
-            // 1. Kivesszük az .Include(w => w.Mechanic)-ot, mert az SQL már nem látja
             var query = _context.WorkSheets
                 .Include(w => w.Vehicle)
                 .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Materials)
                 .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Parts)
                 .AsQueryable();
 
-            if (!showAll)
+            if (!User.IsInRole("Admin"))
+            {
+                var currentUserName = User.Identity?.Name;
+                query = query.Where(w => w.RecruiterName == currentUserName);
+            }
+
+            if (!showAll && !User.IsInRole("Admin"))
             {
                 query = query.Where(w => w.Status == true);
             }
@@ -37,20 +42,17 @@ namespace SzereloMuhely.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(w => w.Title.Contains(searchString) ||
-                                         w.Vehicle.LicensePlate.Contains(searchString) ||
-                                         w.Vehicle.OwnerName.Contains(searchString));
+                                         (w.Vehicle != null && w.Vehicle.LicensePlate.Contains(searchString)) ||
+                                         (w.Vehicle != null && w.Vehicle.OwnerName.Contains(searchString)));
             }
 
             var workSheets = await query.OrderByDescending(w => w.CreatedAt).ToListAsync();
 
-            // 2. MANUÁLIS ÖSSZEKÖTÉS: Lekérjük a júzereket az IdentityContext-ből
             var users = await _identityContext.Users.ToListAsync();
             foreach (var ws in workSheets)
             {
-                // A MechanicID (string) alapján megkeressük a júzert az Identity táblából
                 ws.Mechanic = users.FirstOrDefault(u => u.Id == ws.MechanicID);
             }
-
             return View(workSheets);
         }
 
@@ -67,7 +69,6 @@ namespace SzereloMuhely.Controllers
 
             if (workSheet == null) return NotFound();
 
-            // Szerelő manuális betöltése
             workSheet.Mechanic = await _identityContext.Users
                 .FirstOrDefaultAsync(u => u.Id == workSheet.MechanicID);
 
@@ -88,7 +89,7 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Title,MechanicID,RecruiterName")] WorkSheet workSheet)
         {
-            workSheet.RecruiterName = "Szabó Mari";
+            workSheet.RecruiterName = User.Identity.Name;
             workSheet.CreatedAt = DateTime.Now;
             workSheet.Status = true;
 

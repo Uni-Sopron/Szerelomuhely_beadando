@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SzereloMuhely.Data;
 using SzereloMuhely.Models;
+using System.Security.Claims;
 
 namespace SzereloMuhely.Controllers
 {
@@ -20,8 +21,15 @@ namespace SzereloMuhely.Controllers
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-            var serviceContext = _context.Vehicles.Include(v => v.WorkSheet);
-            return View(await serviceContext.ToListAsync());
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var query = _context.Vehicles.Include(v => v.WorkSheet).AsQueryable();
+
+            if (!User.IsInRole("Admin"))
+            {
+                query = query.Where(v => v.WorkSheet.MechanicID == currentUserId);
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Vehicles/Details/5
@@ -46,9 +54,10 @@ namespace SzereloMuhely.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var assignedWorkSheetIds = _context.Vehicles.Select(v => v.WorkSheetID).ToList();
             var freeWorkSheets = _context.WorkSheets
-                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID))
+                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID) && ws.MechanicID == currentUserId)
                 .ToList();
             ViewData["WorkSheetID"] = new SelectList(freeWorkSheets, "ID", "Title");
             return View();

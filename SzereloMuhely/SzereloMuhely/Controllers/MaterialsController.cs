@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using SzereloMuhely.Data;
 using SzereloMuhely.Models;
 
@@ -20,8 +21,18 @@ namespace SzereloMuhely.Controllers
         // GET: Materials
         public async Task<IActionResult> Index()
         {
-            var serviceContext = _context.Materials.Include(m => m.WorkProcess);
-            return View(await serviceContext.ToListAsync());
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var query = _context.Materials
+                .Include(p => p.WorkProcess)
+                    .ThenInclude(wp => wp.WorkSheet)
+                .AsQueryable();
+
+            if (!User.IsInRole("Admin"))
+            {
+                query = query.Where(p => p.WorkProcess.WorkSheet.MechanicID == currentUserId);
+            }
+
+            return View(await query.ToListAsync());
         }
 
         // GET: Materials/Details/5
@@ -46,7 +57,17 @@ namespace SzereloMuhely.Controllers
         // GET: Materials/Create
         public IActionResult Create()
         {
-            ViewData["WorkProcessID"] = new SelectList(_context.WorkProcesses, "ID", "Name");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var myWorkProcesses = _context.WorkProcesses
+                .Include(wp => wp.WorkSheet)
+                .Where(wp => User.IsInRole("Admin") || wp.WorkSheet.MechanicID == currentUserId)
+                .Select(wp => new {
+                    ID = wp.ID,
+                    DisplayName = $"{wp.WorkSheet.Title} - {wp.Name}"
+                })
+                .ToList();
+
+            ViewData["WorkProcessID"] = new SelectList(myWorkProcesses, "ID", "DisplayName");
             return View();
         }
 
