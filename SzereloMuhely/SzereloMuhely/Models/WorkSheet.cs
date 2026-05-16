@@ -16,13 +16,12 @@ namespace SzereloMuhely.Models
         public string MechanicID { get; set; } = null!;
         [Required]
         [Display(Name = "Munkalap nyitott")]
-        public bool Status { get; set; } = true;
+        public bool IsOpen { get; set; } = true;
 
-        public bool IsClosed => !Status;
 
         [Required]
         [Display(Name = "Munkafelvevő")]
-        public string RecruiterName { get; set; } = null!;
+        public string RecruiterId { get; set; } = null!;
 
         [Required]
         [Display(Name = "Felvétel időpontja")]
@@ -37,7 +36,10 @@ namespace SzereloMuhely.Models
             get
             {
                 if (WorkProcesses == null) return 0;
-                return WorkProcesses.Sum(wp => wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity));
+                return WorkProcesses.Sum(wp => 
+                    wp.Price + 
+                    (wp.Materials?.Sum(m => m.Price * m.Quantity) ?? 0) + 
+                    wp.Parts?.Sum(p => p.Price * p.Quantity) ?? 0);
             }
         }
         [ValidateNever]

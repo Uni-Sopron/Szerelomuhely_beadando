@@ -54,33 +54,33 @@ namespace SzereloMuhely.Data
                 {
                     Title = "Éves szerviz",
                     MechanicID = mechanic1!.Id,
-                    RecruiterName = recruiter.UserName,
+                    RecruiterId = recruiter.Id,
                     CreatedAt = DateTime.Now.AddDays(-2),
-                    Status = true
+                    IsOpen = true
                 },
                 new WorkSheet
                 {
                     Title = "Fékjavítás",
                     MechanicID = mechanic2!.Id,
-                    RecruiterName = recruiter.UserName,
+                    RecruiterId = recruiter.Id,
                     CreatedAt = DateTime.Now.AddDays(-5),
-                    Status = false
+                    IsOpen = false
                 },
                 new WorkSheet
                 {
                     Title = "Olajcsere",
                     MechanicID = mechanic1.Id,
-                    RecruiterName = recruiter.UserName,
+                    RecruiterId = recruiter.Id,
                     CreatedAt = DateTime.Now.AddHours(-3),
-                    Status = true
+                    IsOpen = true
                 },
                 new WorkSheet
                 {
                     Title = "Kerékcsere",
                     MechanicID = mechanic1.Id,
-                    RecruiterName = recruiter.UserName,
+                    RecruiterId = recruiter.Id,
                     CreatedAt = DateTime.Now.AddDays(-5),
-                    Status = true
+                    IsOpen = true
                 }
             };
             context.WorkSheets.AddRange(workSheets);
