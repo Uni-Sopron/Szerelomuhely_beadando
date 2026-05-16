@@ -54,12 +54,16 @@ namespace SzereloMuhely.Controllers
         // GET: WorkProcesses/Create
         public IActionResult Create()
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var assignedWorkSheetIds = _context.WorkProcesses.Select(v => v.WorkSheetID).ToList();
-            var freeWorkSheets = _context.WorkSheets
-                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID) && ws.MechanicID == currentUserId)
-                .ToList();
-            ViewData["WorkSheetID"] = new SelectList(freeWorkSheets, "ID", "Title");
+            var query = _context.WorkSheets.AsQueryable();
+            if (!User.IsInRole("Admin"))
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                query = query.Where(ws => ws.MechanicID == currentUserId);
+
+            }
+            var assignedWorkSheets = query.ToList();
+
+            ViewData["WorkSheetID"] = new SelectList(assignedWorkSheets, "ID", "Title");
             return View();
         }
 

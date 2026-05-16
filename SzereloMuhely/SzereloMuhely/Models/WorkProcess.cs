@@ -5,7 +5,7 @@ namespace SzereloMuhely.Models
     public class WorkProcess : WorkItem
     {
         [Required]
-        [Display(Name = "Munkafolyamat időtartama")]
+        [Display(Name = "Munkaóra")]
         public int Duration { get; set; }
 
         public int WorkSheetID { get; set; }

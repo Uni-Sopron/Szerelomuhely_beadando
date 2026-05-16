@@ -15,26 +15,60 @@
         <dd class = "col-sm-6">
             @Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class = "col-sm-6">
-            @Html.DisplayNameFor(model => model.IsOpen)
+        <dt class="col-sm-6">
+            @Html.DisplayNameFor(model => model.ID)
         </dt>
-        <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.IsOpen)
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.ID)
         </dd>
+        @if (!@Model.IsOpen) {
         <dt class = "col-sm-6">
             @Html.DisplayNameFor(model => model.PaymentMethod)
         </dt>
         <dd class = "col-sm-6">
             @Html.DisplayFor(model => model.PaymentMethod)
         </dd>
+        }
+        <dt class = "col-sm-6">
+            @Html.DisplayNameFor(model => model.Recruiter)
+        </dt>
+        <dd class = "col-sm-6">
+            @Html.DisplayFor(model => model.Recruiter.UserName) 
+        </dd>
     </dl>
-    <h3>Munkafolyamatok</h3>
+
+    <hr />
+    <h4>Jármű</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Vehicle.LicensePlate)</th>
+                <th>@Html.DisplayNameFor(model => model.Vehicle.Make)</th>
+                <th>@Html.DisplayNameFor(model => model.Vehicle.Model)</th>
+                <th>@Html.DisplayNameFor(model => model.Vehicle.OwnerName)</th>
+                <th>@Html.DisplayNameFor(model => model.Vehicle.OwnerAddress)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DisplayFor(model => model.Vehicle.LicensePlate)</td>
+                <td>@Html.DisplayFor(model => model.Vehicle.Make)</td>
+                <td>@Html.DisplayFor(model => model.Vehicle.Model)</td>
+                <td>@Html.DisplayFor(model => model.Vehicle.OwnerName)</td>
+                <td>@Html.DisplayFor(model => model.Vehicle.OwnerAddress)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr />
+    <h4>Munkafolyamatok</h4>
     <table class="table">
         <thead>
             <tr>
                 <th>Megnevezés</th>
                 <th>Munkadíj</th>
                 <th>Anyag + Alkatrész</th>
+                <th>Munkaóra</th>
                 <th>Összesen</th>
             </tr>
         </thead>
@@ -48,20 +82,29 @@
                         @((wp.Materials.Sum(m => m.Price * m.Quantity) +
                            wp.Parts.Sum(p => p.Price * p.Quantity)).ToString("C0"))
                     </td>
+                    <td>@wp.Duration</td>
                     <td><strong>@((wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity)).ToString("C0"))</strong></td>
                 </tr>
             }
         </tbody>
     </table>
 
+
+
+    <hr />
     <div class="alert alert-info">
-        <h4>Fizetendő végösszeg: @Model.TotalAmount.ToString("C0")</h4>
+        <h5>Fizetendő végösszeg: @Model.TotalAmount.ToString("C0")</h5>
     </div>
     @if (!User.IsInRole("Mechanic"))
     {
-    <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">
-        Módosítás
-    </a>
+    <div >
+        <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">
+            Módosítás
+        </a>
+        <a asp-action="Close" asp-route-id="@Model?.ID" class="btn btn-warning">
+            Lezárás
+        </a>
+    </div>
     }
 </div>
     <a asp-action="Index">

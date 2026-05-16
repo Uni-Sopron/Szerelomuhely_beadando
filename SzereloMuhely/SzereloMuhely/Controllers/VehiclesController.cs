@@ -49,11 +49,21 @@ namespace SzereloMuhely.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var assignedWorkSheetIds = _context.Vehicles.Select(v => v.WorkSheetID).ToList();
-            var freeWorkSheets = _context.WorkSheets
-                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID) && ws.MechanicID == currentUserId)
+            var assignedWorkSheetIds = _context.Vehicles
+                .Select(v => v.WorkSheetID)
                 .ToList();
+
+            var query = _context.WorkSheets
+                .Where(ws => !assignedWorkSheetIds.Contains(ws.ID));
+
+            if (!User.IsInRole("Admin"))
+            {
+                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                query = query.Where(ws => ws.RecruiterId == currentUserId);
+            }
+
+            var freeWorkSheets = query.ToList();
+
             ViewData["WorkSheetID"] = new SelectList(freeWorkSheets, "ID", "Title");
             return View();
         }

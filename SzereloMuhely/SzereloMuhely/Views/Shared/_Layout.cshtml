@@ -19,8 +19,13 @@
     }
 
     table {
-        background-color: red;
+        text-align: center;
     }
+
+    thead {
+        border-bottom: 1px solid #17cfcb;
+    }
+
 </style>
 
 <body>
@@ -37,18 +42,24 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="WorkSheets" asp-action="Index">Munkalapok</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index">Járművek</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="WorkProcesses" asp-action="Index">Munkafolyamatok</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Parts" asp-action="Index">Alkatrészek</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Materials" asp-action="Index">Anyagok</a>
-                        </li>
+                        @if (User.IsInRole("Recruiter") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Vehicles" asp-action="Index">Járművek</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Mechanic") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="WorkProcesses" asp-action="Index">Munkafolyamatok</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Parts" asp-action="Index">Alkatrészek</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Materials" asp-action="Index">Anyagok</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

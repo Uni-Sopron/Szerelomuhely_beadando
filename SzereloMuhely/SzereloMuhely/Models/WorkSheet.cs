@@ -7,6 +7,7 @@ namespace SzereloMuhely.Models
 {
     public class WorkSheet
     {
+        [Display(Name = "Azonosító")]
         public int ID { get; set; }
         [Required]
         [Display(Name = "Munkalap címe")]
@@ -45,6 +46,9 @@ namespace SzereloMuhely.Models
         [ValidateNever]
         [NotMapped]
         public virtual IdentityUser? Mechanic { get; set; }
+        [ValidateNever]
+        [NotMapped]
+        public virtual IdentityUser? Recruiter { get; set; }
         public virtual Vehicle? Vehicle { get; set; }
         public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = new List<WorkProcess>();
     }

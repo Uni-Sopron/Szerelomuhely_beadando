@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +14,13 @@ namespace SzereloMuhely.Controllers
     {
         private readonly ServiceContext _context;
         private readonly ApplicationDbContext _identityContext;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public WorkSheetsController(ServiceContext context, ApplicationDbContext identityContext)
+        public WorkSheetsController(ServiceContext context, ApplicationDbContext identityContext, UserManager<IdentityUser> manager)
         {
             _context = context;
             _identityContext = identityContext;
+            _userManager = manager;
         }
 
         // GET: WorkSheets
@@ -34,7 +37,7 @@ namespace SzereloMuhely.Controllers
             {
                 query = query.Where(w => w.MechanicID == currentUserId);
             }
-            else if (User.IsInRole("Recuiter"))
+            else if (User.IsInRole("Recruiter"))
             {
                 query = query.Where(w => w.RecruiterId == currentUserId);
             }
@@ -57,6 +60,7 @@ namespace SzereloMuhely.Controllers
             foreach (var ws in workSheets)
             {
                 ws.Mechanic = users.FirstOrDefault(u => u.Id == ws.MechanicID);
+                ws.Recruiter = users.FirstOrDefault(u => u.Id == ws.RecruiterId);
             }
             return View(workSheets);
         }
@@ -77,13 +81,16 @@ namespace SzereloMuhely.Controllers
             workSheet.Mechanic = await _identityContext.Users
                 .FirstOrDefaultAsync(u => u.Id == workSheet.MechanicID);
 
+            workSheet.Recruiter = await _identityContext.Users
+                .FirstOrDefaultAsync(u => u.Id == workSheet.RecruiterId);
+
             return View(workSheet);
         }
 
         // GET: WorkSheets/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
+            await PopulateMechanicsDropDownListAsync();
             return View();
         }
 
@@ -109,7 +116,8 @@ namespace SzereloMuhely.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
+
+            await PopulateMechanicsDropDownListAsync();
             return View(workSheet);
         }
 
@@ -131,7 +139,8 @@ namespace SzereloMuhely.Controllers
             {
                 return BadRequest("Lezárt munkalap nem módosítható.");
             }
-            ViewData["MechanicID"] = new SelectList(_identityContext.Users, "Id", "UserName");
+
+            await PopulateMechanicsDropDownListAsync();
             return View(workSheet);
         }
 
@@ -150,7 +159,7 @@ namespace SzereloMuhely.Controllers
             ModelState.Remove("Mehanic");
             ModelState.Remove("Vehicle");
             ModelState.Remove("WorkProcesses");
-            ModelState.Remove("RecruiterName");
+            ModelState.Remove("RecruiterId");
 
             if (ModelState.IsValid)
             {
@@ -218,6 +227,13 @@ namespace SzereloMuhely.Controllers
         private bool WorkSheetExists(int id)
         {
             return _context.WorkSheets.Any(e => e.ID == id);
+        }
+
+        private async Task PopulateMechanicsDropDownListAsync(object? selectedMechanic = null)
+        {
+            var mechanics = await _userManager.GetUsersInRoleAsync("Mechanic");
+
+            ViewData["MechanicID"] = new SelectList(mechanics, "Id", "UserName", selectedMechanic);
         }
 
         // GET: WorkSheets/Close/5
