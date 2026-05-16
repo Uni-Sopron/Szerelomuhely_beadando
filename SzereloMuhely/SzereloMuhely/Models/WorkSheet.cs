@@ -31,7 +31,7 @@ namespace SzereloMuhely.Models
         public string? PaymentMethod { get; set; } = null;
 
         [Display(Name = "Összesített ár")]
-        public decimal TotalAmount
+        public int TotalAmount
         {
             get
             {
