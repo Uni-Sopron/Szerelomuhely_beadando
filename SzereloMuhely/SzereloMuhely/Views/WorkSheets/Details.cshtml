@@ -16,10 +16,10 @@
             @Html.DisplayFor(model => model.Title)
         </dd>
         <dt class = "col-sm-6">
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.IsOpen)
         </dt>
         <dd class = "col-sm-6">
-            @Html.DisplayFor(model => model.Status)
+            @Html.DisplayFor(model => model.IsOpen)
         </dd>
         <dt class = "col-sm-6">
             @Html.DisplayNameFor(model => model.PaymentMethod)
@@ -28,9 +28,41 @@
             @Html.DisplayFor(model => model.PaymentMethod)
         </dd>
     </dl>
+    <h3>Munkafolyamatok</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Megnevezés</th>
+                <th>Munkadíj</th>
+                <th>Anyag + Alkatrész</th>
+                <th>Összesen</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wp in Model.WorkProcesses)
+            {
+                <tr>
+                    <td>@wp.Name</td>
+                    <td>@wp.Price.ToString("C0")</td>
+                    <td>
+                        @((wp.Materials.Sum(m => m.Price * m.Quantity) +
+                           wp.Parts.Sum(p => p.Price * p.Quantity)).ToString("C0"))
+                    </td>
+                    <td><strong>@((wp.Price + wp.Materials.Sum(m => m.Price * m.Quantity) + wp.Parts.Sum(p => p.Price * p.Quantity)).ToString("C0"))</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="alert alert-info">
+        <h4>Fizetendő végösszeg: @Model.TotalAmount.ToString("C0")</h4>
+    </div>
+    @if (!User.IsInRole("Mechanic"))
+    {
     <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">
         Módosítás
     </a>
+    }
 </div>
     <a asp-action="Index">
         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">

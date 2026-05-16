@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace SzereloMuhely.Controllers
 {
-    [Authorize(Roles = "Admin,Mechanic")]
+    [Authorize(Roles = "Admin,Recruiter")]
     public class VehiclesController : Controller
     {
         private readonly ServiceContext _context;
@@ -23,11 +23,6 @@ namespace SzereloMuhely.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var query = _context.Vehicles.Include(v => v.WorkSheet).AsQueryable();
-
-            if (!User.IsInRole("Admin"))
-            {
-                query = query.Where(v => v.WorkSheet.MechanicID == currentUserId);
-            }
 
             return View(await query.ToListAsync());
         }

@@ -24,6 +24,9 @@
                 @Html.DisplayNameFor(model => model.Duration)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.WorkSheet)
             </th>
             <th></th>
@@ -37,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @item.Price.ToString("C0")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.WorkSheet.Title)

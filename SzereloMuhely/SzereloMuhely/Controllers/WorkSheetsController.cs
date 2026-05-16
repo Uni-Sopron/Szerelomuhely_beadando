@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using SzereloMuhely.Data;
 using SzereloMuhely.Models;
 
 namespace SzereloMuhely.Controllers
 {
-    [Authorize(Roles = "Admin,Recruiter")]
+    [Authorize(Roles = "Admin,Recruiter, Mechanic")]
     public class WorkSheetsController : Controller
     {
         private readonly ServiceContext _context;
@@ -22,21 +23,25 @@ namespace SzereloMuhely.Controllers
         // GET: WorkSheets
         public async Task<IActionResult> Index(string? searchString, bool showAll = false)
         {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var query = _context.WorkSheets
                 .Include(w => w.Vehicle)
                 .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Materials)
                 .Include(w => w.WorkProcesses).ThenInclude(wp => wp.Parts)
                 .AsQueryable();
 
-            if (!User.IsInRole("Admin"))
+            if (User.IsInRole("Mechanic"))
             {
-                var currentUserName = User.Identity?.Name;
-                query = query.Where(w => w.RecruiterName == currentUserName);
+                query = query.Where(w => w.MechanicID == currentUserId);
+            }
+            else if (User.IsInRole("Recuiter"))
+            {
+                query = query.Where(w => w.RecruiterId == currentUserId);
             }
 
             if (!showAll && !User.IsInRole("Admin"))
             {
-                query = query.Where(w => w.Status == true);
+                query = query.Where(w => w.IsOpen == true);
             }
 
             if (!string.IsNullOrEmpty(searchString))
@@ -89,9 +94,9 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Title,MechanicID,RecruiterName")] WorkSheet workSheet)
         {
-            workSheet.RecruiterName = User.Identity.Name;
+            workSheet.RecruiterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             workSheet.CreatedAt = DateTime.Now;
-            workSheet.Status = true;
+            workSheet.IsOpen = true;
 
             ModelState.Remove("Vehicle");
             ModelState.Remove("WorkProcesses");
@@ -122,7 +127,7 @@ namespace SzereloMuhely.Controllers
                 return NotFound();
             }
 
-            if (workSheet.IsClosed)
+            if (!workSheet.IsOpen)
             {
                 return BadRequest("Lezárt munkalap nem módosítható.");
             }
@@ -229,7 +234,7 @@ namespace SzereloMuhely.Controllers
                 .FirstOrDefaultAsync(m => m.ID == id);
 
             if (workSheet == null) return NotFound();
-            if (workSheet.IsClosed) return BadRequest("A munkalap már le van zárva.");
+            if (!workSheet.IsOpen) return BadRequest("A munkalap már le van zárva.");
 
             return View(workSheet);
         }
@@ -241,7 +246,7 @@ namespace SzereloMuhely.Controllers
         {
             var workSheet = await _context.WorkSheets.FindAsync(id);
             if (workSheet == null) return NotFound();
-            if (workSheet.IsClosed) return BadRequest("A munkalap már le van zárva.");
+            if (!workSheet.IsOpen) return BadRequest("A munkalap már le van zárva.");
 
             if (string.IsNullOrEmpty(paymentMethod))
             {
@@ -249,7 +254,7 @@ namespace SzereloMuhely.Controllers
                 return View(workSheet);
             }
 
-            workSheet.Status = false; // Closed
+            workSheet.IsOpen = false; // Closed
             workSheet.PaymentMethod = paymentMethod;
             _context.Update(workSheet);
             await _context.SaveChangesAsync();
