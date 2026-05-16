@@ -23,6 +23,12 @@
             @Html.DisplayFor(model => model.Quantity)
         </dd>
         <dt class = "col-sm-6">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-6">
+            @Model.Price.ToString("C0")
+        </dd>
+        <dt class = "col-sm-6">
             @Html.DisplayNameFor(model => model.WorkProcess)
         </dt>
         <dd class = "col-sm-6">

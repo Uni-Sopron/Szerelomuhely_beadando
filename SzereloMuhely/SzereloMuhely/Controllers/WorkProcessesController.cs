@@ -68,7 +68,7 @@ namespace SzereloMuhely.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,Name,Duration,WorkSheetID")] WorkProcess workProcess)
+        public async Task<IActionResult> Create([Bind("ID,Name,Duration,Price,WorkSheetID")] WorkProcess workProcess)
         {
             ModelState.Remove("WorkSheet");
             if (ModelState.IsValid)
@@ -103,7 +103,7 @@ namespace SzereloMuhely.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Duration,WorkSheetID")] WorkProcess workProcess)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Duration,Price,WorkSheetID")] WorkProcess workProcess)
         {
             if (id != workProcess.ID)
             {
