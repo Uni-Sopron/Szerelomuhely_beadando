@@ -87,22 +87,63 @@
                             </svg>
                         </a>
                     }
-                    @if (item.IsOpen && User.IsInRole("Recruiter") || item.IsOpen && User.IsInRole("Admin"))
+                    @if (!User.IsInRole("Mechanic"))
                     {
                         <a asp-action="Delete" asp-route-id="@item.ID" class="text-danger">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
                                 <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
                             </svg>
                         </a>
-                    <a asp-action="Close" asp-route-id="@item.ID" class="text-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-zip-fill" viewBox="0 0 16 16">
-                            <path d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243" />
-                            <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1" />
-                        </svg>
-                    </a>
+                    }
+                    @if (item.IsOpen && User.IsInRole("Recruiter") || item.IsOpen && User.IsInRole("Admin"))
+                    {
+                        <button type="button" class="btn btn-link text-success p-0"
+                                data-bs-toggle="modal" data-bs-target="#closeModal-@item.ID" title="Lezárás">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-zip-fill" viewBox="0 0 16 16">
+                                <path d="M5.5 9.438V8.5h1v.938a1 1 0 0 0 .03.243l.4 1.598-.93.62-.93-.62.4-1.598a1 1 0 0 0 .03-.243" />
+                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1m-4-.5V2h-1V1H6v1h1v1H6v1h1v1H6v1h1v1H5.5V6h-1V5h1V4h-1V3zm0 4.5h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V8.5a1 1 0 0 1 1-1" />
+                            </svg>
+                        </button>
                     }
                 </td>
             </tr>
+            <div class="modal fade" id="closeModal-@item.ID" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-info">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Munkalap véglegesítése - @item.Title</h5>
+                        </div>
+                        <form asp-action="Close" method="post">
+                            <input type="hidden" name="id" value="@item.ID" />
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="paymentMethod-@item.ID" class="form-label fw-bold">Fizetési mód kiválasztása:</label>
+                                    <select name="paymentMethod" id="paymentMethod-@item.ID" class="form-select border-info" required>
+                                        <option value="">-- Kérjük, válasszon --</option>
+                                        <option value="Készpénz">Készpénz</option>
+                                        <option value="Bankkártya">Bankkártya</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <h5>
+                                        Fizetendő végösszeg:
+                                        <span class="fw-bold">@item.TotalAmount.ToString("C0")</span>
+                                    </h5>
+                                </div>
+                
+                                <div class="alert alert-warning small">
+                                    <span>Lezárás után a munkalap nem módosítható!</span>
+                                </div>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center">
+                                <button type="submit" class="btn btn-danger">Lezárás</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         }
     </tbody>
 </table>
+
+

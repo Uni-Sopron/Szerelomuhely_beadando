@@ -16,6 +16,12 @@
             @Html.DisplayFor(model => model.Title)
         </dd>
         <dt class="col-sm-6">
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+        <dt class="col-sm-6">
             @Html.DisplayNameFor(model => model.ID)
         </dt>
         <dd class="col-sm-6">
@@ -34,6 +40,12 @@
         </dt>
         <dd class = "col-sm-6">
             @Html.DisplayFor(model => model.Recruiter.UserName) 
+        </dd>
+        <dt class="col-sm-6">
+            @Html.DisplayNameFor(model => model.Mechanic)
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.Mechanic.UserName)
         </dd>
     </dl>
 
@@ -116,35 +128,38 @@
     </svg>
 </a>
 
-
-<div class="modal" id="closeModal" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content border-info">
-            <div class="modal-header">
-                <h5 class="modal-title">Munkalap véglegesítése - @Model.Title</h5>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="paymentMethod" class="form-label fw-bold">Fizetési mód kiválasztása:</label>
-                    <select name="paymentMethod" id="paymentMethod" class="form-select border-info" required>
-                        <option value="">-- Kérjük, válasszon --</option>
-                        <option value="Készpénz">Készpénz</option>
-                        <option value="Bankkártya">Bankkártya</option>
-                    </select>
+    <div class="modal fade" id="closeModal" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-info">
+                <div class="modal-header">
+                    <h5 class="modal-title">Munkalap véglegesítése - @Model.Title</h5>
                 </div>
-                <div class="mb-3">
-                    <h5>
-                        Fizetendő végösszeg:
-                        <span class="fw-bold">@Model.TotalAmount.ToString("C0")</span>
-                    </h5>
-                </div>
-                <div class="alert alert-warning small">
-                    <span>Lezárás után a munkalap nem módosítható!</span>
-            </div>
-                </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger">Lezárás</button>
+                <form asp-action="Close" method="post">
+                    <input type="hidden" asp-for="ID" />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label fw-bold">Fizetési mód kiválasztása:</label>
+                            <select name="paymentMethod" id="paymentMethod" class="form-select border-info" required>
+                                <option value="">-- Kérjük, válasszon --</option>
+                                <option value="Készpénz">Készpénz</option>
+                                <option value="Bankkártya">Bankkártya</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <h5>
+                                Fizetendő végösszeg:
+                                <span class="fw-bold">@Model.TotalAmount.ToString("C0")</span>
+                            </h5>
+                        </div>
+                
+                        <div class="alert alert-warning small">
+                            <span>Lezárás után a munkalap nem módosítható!</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-danger">Lezárás</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
