@@ -45,9 +45,11 @@ namespace SzereloMuhely.Models
         }
         [ValidateNever]
         [NotMapped]
+        [Display(Name = "Szerelő")]
         public virtual IdentityUser? Mechanic { get; set; }
         [ValidateNever]
         [NotMapped]
+        [Display(Name = "Munkafelvevő")]
         public virtual IdentityUser? Recruiter { get; set; }
         public virtual Vehicle? Vehicle { get; set; }
         public virtual ICollection<WorkProcess> WorkProcesses { get; set; } = new List<WorkProcess>();

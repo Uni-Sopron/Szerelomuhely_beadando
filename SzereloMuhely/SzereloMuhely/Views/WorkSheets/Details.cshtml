@@ -98,17 +98,53 @@
     @if (!User.IsInRole("Mechanic"))
     {
     <div >
-        <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">
-            Módosítás
-        </a>
-        <a asp-action="Close" asp-route-id="@Model?.ID" class="btn btn-warning">
-            Lezárás
-        </a>
-    </div>
+            @if (Model.IsOpen)
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">
+                    Módosítás
+                </a>
+                <button type="button" class="btn btn-danger " data-bs-toggle="modal" data-bs-target="#closeModal">
+                    Munkalap lezárása
+                </button>
+            }
+        </div>
     }
 </div>
-    <a asp-action="Index">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
-        </svg>
-    </a>
+<a asp-action="Index">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+    </svg>
+</a>
+
+
+<div class="modal" id="closeModal" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-info">
+            <div class="modal-header">
+                <h5 class="modal-title">Munkalap véglegesítése - @Model.Title</h5>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="paymentMethod" class="form-label fw-bold">Fizetési mód kiválasztása:</label>
+                    <select name="paymentMethod" id="paymentMethod" class="form-select border-info" required>
+                        <option value="">-- Kérjük, válasszon --</option>
+                        <option value="Készpénz">Készpénz</option>
+                        <option value="Bankkártya">Bankkártya</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <h5>
+                        Fizetendő végösszeg:
+                        <span class="fw-bold">@Model.TotalAmount.ToString("C0")</span>
+                    </h5>
+                </div>
+                <div class="alert alert-warning small">
+                    <span>Lezárás után a munkalap nem módosítható!</span>
+            </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger">Lezárás</button>
+            </div>
+        </div>
+    </div>
+</div>
