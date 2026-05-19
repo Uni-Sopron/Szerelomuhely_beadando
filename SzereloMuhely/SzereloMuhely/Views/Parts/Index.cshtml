@@ -1,7 +1,9 @@
-﻿@model IEnumerable<SzereloMuhely.Models.Part>
+@model IEnumerable<SzereloMuhely.Models.Part>
 
 @{
     ViewData["Title"] = "Alkatrészek";
+    int currentPage = (int)(ViewData["CurrentPage"] ?? 1);
+    int totalPages = (int)(ViewData["TotalPages"] ?? 1);
 }
 
 <h1>Alkatrész</h1>
@@ -14,6 +16,46 @@
         Új hozzáadása
     </a>
 </p>
+
+<div class="mb-3">
+    <form id="searchForm" asp-action="Index" method="get" class="d-flex justify-content-between align-items-center">
+        <div class="input-group-sm d-flex gap-1">
+            <input type="text" id="searchInput" name="searchString" value="@ViewData["AktualisKereses"]" placeholder="Kezdj el gépelni..." class="rounded" autocomplete="off" />
+            <input type="submit" value="Keresés" class="btn btn-sm btn-primary d-none" />
+        </div>
+        @if (!User.IsInRole("Mechanic"))
+        {
+            <div>
+                <label for="showAll" class="me-1">Összes mutatása</label>
+                <input type="checkbox" id="showAll" name="showAll" value="true" onchange="this.form.submit()" @((bool)(ViewData["ShowAll"] ?? false) ? "checked" : "") />
+                <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+            </div>
+        }
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("searchInput");
+        const searchForm = document.getElementById("searchForm");
+        let timeout = null;
+
+        searchInput.addEventListener("input", function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                searchForm.submit();
+            }, 500);
+        });
+
+        if (searchInput.value.length > 0) {
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+            searchInput.focus();
+        }
+    });
+</script>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -34,7 +76,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="@(item.WorkProcess?.WorkSheet?.IsOpen == false ? "table-secondary text-muted" : "")">
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -48,24 +90,57 @@
                 @Html.DisplayFor(modelItem => item.WorkProcess.Name)
             </td>
                 <td class="d-flex justify-content-center gap-2">
-                    <a asp-action="Edit" asp-route-id="@item.ID">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
-                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001" />
-                        </svg>
-                    </a>
+                    @if (item.WorkProcess.WorkSheet.IsOpen)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.ID">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001" />
+                            </svg>
+                        </a>
+                    }
+                
                     <a asp-action="Details" asp-route-id="@item.ID">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
                             <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0" />
                             <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7" />
                         </svg>
                     </a>
-                    <a asp-action="Delete" asp-route-id="@item.ID" class="text-danger">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
-                        </svg>
-                    </a>
+                    @if (item.WorkProcess.WorkSheet.IsOpen)
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.ID" class="text-danger">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5" />
+                            </svg>
+                        </a>
+                    }
                 </td>
         </tr>
 }
     </tbody>
 </table>
+
+@if (totalPages > 1)
+{
+    <nav aria-label="Alkatrészek lapozása" class="mt-4">
+        <ul class="pagination justify-content-center">
+            @if (currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-searchString="@ViewData["AktualisKereses"]" asp-route-showAll="@ViewData["ShowAll"]">Előző</a>
+                </li>
+            }
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchString="@ViewData["AktualisKereses"]" asp-route-showAll="@ViewData["ShowAll"]">@i</a>
+                </li>
+            }
+            @if (currentPage < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-searchString="@ViewData["AktualisKereses"]" asp-route-showAll="@ViewData["ShowAll"]">Következő</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

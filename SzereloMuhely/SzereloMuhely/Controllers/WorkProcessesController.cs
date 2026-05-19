@@ -19,17 +19,48 @@ namespace SzereloMuhely.Controllers
         }
 
         // GET: WorkProcesses
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, bool showAll = false, int page = 1)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var query = _context.WorkProcesses.Include(v => v.WorkSheet).AsQueryable();
+            var query = _context.WorkProcesses
+                .Include(wp => wp.WorkSheet)
+                .ThenInclude(ws => ws.Vehicle)
+                .AsQueryable();
 
-            if (!User.IsInRole("Admin"))
+            if (User.IsInRole("Mechanic"))
             {
-                query = query.Where(v => v.WorkSheet.MechanicID == currentUserId);
+                query = query.Where(wp => wp.WorkSheet.MechanicID == currentUserId);
             }
 
-            return View(await query.ToListAsync());
+            if (!showAll)
+            {
+                query = query.Where(wp => wp.WorkSheet.IsOpen == true);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(wp => wp.Name.Contains(searchString) ||
+                                         (wp.WorkSheet != null && (
+                                            wp.WorkSheet.Title.Contains(searchString) ||
+                                            (wp.WorkSheet.Vehicle != null && wp.WorkSheet.Vehicle.LicensePlate.Contains(searchString))
+                                         )));
+            }
+
+            int pageSize = 10;
+            int totalCount = await query.CountAsync();
+
+            var workProcesses = await query
+                .OrderByDescending(wp => wp.ID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+            ViewData["AktualisKereses"] = searchString;
+            ViewData["ShowAll"] = showAll;
+
+            return View(workProcesses);
         }
 
         // GET: WorkProcesses/Details/5
@@ -54,7 +85,7 @@ namespace SzereloMuhely.Controllers
         // GET: WorkProcesses/Create
         public IActionResult Create()
         {
-            var query = _context.WorkSheets.AsQueryable();
+            var query = _context.WorkSheets.Where(ws => ws.IsOpen).AsQueryable();
             if (!User.IsInRole("Admin"))
             {
                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -164,13 +195,17 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var workProcess = await _context.WorkProcesses.FindAsync(id);
+            var workProcess = await _context.WorkProcesses
+                .Include(wp => wp.Materials)
+                .Include(wp => wp.Parts)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
             if (workProcess != null)
             {
                 _context.WorkProcesses.Remove(workProcess);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

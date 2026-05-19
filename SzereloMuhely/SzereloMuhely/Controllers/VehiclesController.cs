@@ -19,12 +19,40 @@ namespace SzereloMuhely.Controllers
         }
 
         // GET: Vehicles
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, bool showAll = false, int page = 1)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var query = _context.Vehicles.Include(v => v.WorkSheet).AsQueryable();
 
-            return View(await query.ToListAsync());
+            if (!showAll)
+            {
+                query = query.Where(v => v.WorkSheet.IsOpen == true);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(v => v.LicensePlate.Contains(searchString) ||
+                                         v.OwnerName.Contains(searchString) ||
+                                         v.Make.Contains(searchString) ||
+                                         v.Model.Contains(searchString) ||
+                                         (v.WorkSheet != null && v.WorkSheet.Title.Contains(searchString)));
+            }
+
+            int pageSize = 10;
+            int totalCount = await query.CountAsync();
+
+            var vehicles = await query
+                .OrderByDescending(v => v.ID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+            ViewData["AktualisKereses"] = searchString;
+            ViewData["ShowAll"] = showAll;
+
+            return View(vehicles);
         }
 
         // GET: Vehicles/Details/5

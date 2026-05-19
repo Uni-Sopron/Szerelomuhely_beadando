@@ -24,8 +24,11 @@ namespace SzereloMuhely.Controllers
         }
 
         // GET: WorkSheets
-        public async Task<IActionResult> Index(string? searchString, bool showAll = false)
+        public async Task<IActionResult> Index(string? searchString, string? sortOrder, bool showAll = false, int page = 1)
         {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var query = _context.WorkSheets
                 .Include(w => w.Vehicle)
@@ -42,7 +45,7 @@ namespace SzereloMuhely.Controllers
                 query = query.Where(w => w.RecruiterId == currentUserId);
             }
 
-            if (!showAll && !User.IsInRole("Admin"))
+            if (!showAll)
             {
                 query = query.Where(w => w.IsOpen == true);
             }
@@ -50,11 +53,42 @@ namespace SzereloMuhely.Controllers
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(w => w.Title.Contains(searchString) ||
-                                         (w.Vehicle != null && w.Vehicle.LicensePlate.Contains(searchString)) ||
-                                         (w.Vehicle != null && w.Vehicle.OwnerName.Contains(searchString)));
+                                         (w.PaymentMethod != null && w.PaymentMethod.Contains(searchString)) ||
+                                         (w.Vehicle != null && (
+                                            w.Vehicle.LicensePlate.Contains(searchString) ||
+                                            w.Vehicle.OwnerName.Contains(searchString) ||
+                                            w.Vehicle.Make.Contains(searchString) ||
+                                            w.Vehicle.Model.Contains(searchString)
+                                         )) ||
+                                         w.WorkProcesses.Any(wp => wp.Name.Contains(searchString)));
             }
 
-            var workSheets = await query.OrderByDescending(w => w.CreatedAt).ToListAsync();
+            switch (sortOrder)
+            {
+                case "Date":
+                    query = query.OrderBy(w => w.CreatedAt);
+                    break;
+                case "date_desc":
+                    query = query.OrderByDescending(w => w.CreatedAt);
+                    break;
+                default:
+                    query = query.OrderByDescending(w => w.CreatedAt);
+                    break;
+            }
+
+            int pageSize = 10;
+            int totalCount = await query.CountAsync();
+
+            var workSheets = await query
+                .Skip((page - 1) * pageSize)         
+                .Take(pageSize)                     
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            ViewData["AktualisKereses"] = searchString;
+            ViewData["ShowAll"] = showAll;
 
             var users = await _identityContext.Users.ToListAsync();
             foreach (var ws in workSheets)
@@ -62,6 +96,7 @@ namespace SzereloMuhely.Controllers
                 ws.Mechanic = users.FirstOrDefault(u => u.Id == ws.MechanicID);
                 ws.Recruiter = users.FirstOrDefault(u => u.Id == ws.RecruiterId);
             }
+
             return View(workSheets);
         }
 
@@ -214,13 +249,20 @@ namespace SzereloMuhely.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var workSheet = await _context.WorkSheets.FindAsync(id);
+            var workSheet = await _context.WorkSheets
+                .Include(ws => ws.Vehicle)
+                .Include(ws => ws.WorkProcesses)
+                    .ThenInclude(wp => wp.Materials)
+                .Include(ws => ws.WorkProcesses)
+                    .ThenInclude(wp => wp.Parts)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
             if (workSheet != null)
             {
                 _context.WorkSheets.Remove(workSheet);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -19,20 +19,52 @@ namespace SzereloMuhely.Controllers
         }
 
         // GET: Materials
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, bool showAll = false, int page = 1)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var query = _context.Materials
                 .Include(p => p.WorkProcess)
                     .ThenInclude(wp => wp.WorkSheet)
+                        .ThenInclude(ws => ws.Vehicle)
                 .AsQueryable();
 
-            if (!User.IsInRole("Admin"))
+            if (User.IsInRole("Mechanic"))
             {
-                query = query.Where(p => p.WorkProcess.WorkSheet.MechanicID == currentUserId);
+                query = query.Where(m => m.WorkProcess.WorkSheet.MechanicID == currentUserId);
             }
 
-            return View(await query.ToListAsync());
+            if (!showAll)
+            {
+                query = query.Where(m => m.WorkProcess.WorkSheet.IsOpen == true);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(m => m.Name.Contains(searchString) ||
+                                         (m.WorkProcess != null && (
+                                            m.WorkProcess.Name.Contains(searchString) ||
+                                            (m.WorkProcess.WorkSheet != null && (
+                                                m.WorkProcess.WorkSheet.Title.Contains(searchString) ||
+                                                (m.WorkProcess.WorkSheet.Vehicle != null && m.WorkProcess.WorkSheet.Vehicle.LicensePlate.Contains(searchString))
+                                            ))
+                                         )));
+            }
+
+            int pageSize = 10;
+            int totalCount = await query.CountAsync();
+
+            var materials = await query
+                .OrderByDescending(m => m.ID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+            ViewData["AktualisKereses"] = searchString;
+            ViewData["ShowAll"] = showAll;
+
+            return View(materials);
         }
 
         // GET: Materials/Details/5
@@ -60,7 +92,7 @@ namespace SzereloMuhely.Controllers
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var myWorkProcesses = _context.WorkProcesses
                 .Include(wp => wp.WorkSheet)
-                .Where(wp => User.IsInRole("Admin") || wp.WorkSheet.MechanicID == currentUserId)
+                .Where(wp => wp.WorkSheet.IsOpen && (User.IsInRole("Admin") || wp.WorkSheet.MechanicID == currentUserId))
                 .Select(wp => new {
                     ID = wp.ID,
                     DisplayName = $"{wp.WorkSheet.Title} - {wp.Name}"

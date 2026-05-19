@@ -1,10 +1,13 @@
-﻿@model IEnumerable<SzereloMuhely.Models.WorkSheet>
+@model IEnumerable<SzereloMuhely.Models.WorkSheet>
 
 @{
     ViewData["Title"] = "Munkalapok";
+    int currentPage = (int)(ViewData["CurrentPage"] ?? 1);
+    int totalPages = (int)(ViewData["TotalPages"] ?? 1);
 }
 
 <h1>Munkalapok</h1>
+
 @if (!User.IsInRole("Mechanic"))
 {
     <p>
@@ -17,6 +20,46 @@
     </p>    
 }
 
+<div class="mb-3">
+    <form id="searchForm" asp-action="Index" method="get" class="d-flex justify-content-between align-items-center">
+        <div class="input-group-sm d-flex gap-1">
+            <input type="text" id="searchInput" name="searchString" value="@ViewData["AktualisKereses"]" placeholder="Kezdj el gépelni..." class="rounded" autocomplete="off" />
+            <input type="submit" value="Keresés" class="btn btn-sm btn-primary d-none" />
+        </div>
+        @if (!User.IsInRole("Mechanic"))
+            {
+            <div>
+                <label for="showAll" class="me-1">Összes mutatása</label>
+                <input type="checkbox" id="showAll" name="showAll" value="true" onchange="this.form.submit()" @((bool)(ViewData["ShowAll"] ?? false) ? "checked" : "") />
+                <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+            </div>
+            }
+            
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById("searchInput");
+        const searchForm = document.getElementById("searchForm");
+        let timeout = null;
+
+        searchInput.addEventListener("input", function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                searchForm.submit();
+            }, 500);
+        });
+
+        if (searchInput.value.length > 0) {
+            const val = searchInput.value;
+            searchInput.value = '';
+            searchInput.value = val;
+            searchInput.focus();
+        }
+    });
+</script>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -25,7 +68,23 @@
             <th>Szerelő</th>
             <th>Állapot</th>
             }
-            <th>Létrehozva</th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-searchString="@ViewData["AktualisKereses"]" asp-route-showAll="@ViewData["ShowAll"]" class="text-decoration-none text-dark">
+                    Létrehozva
+                    @if ((string)ViewData["CurrentSort"] == "Date")
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5" />
+                        </svg>
+                    }
+                    else if ((string)ViewData["CurrentSort"] == "date_desc" || string.IsNullOrEmpty((string)ViewData["CurrentSort"]))
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1" />
+                        </svg>
+                    }
+                </a>
+            </th>
             @if (User.IsInRole("Admin"))
             {
                 <th>@Html.DisplayNameFor(model => model.Recruiter)</th>
@@ -146,4 +205,53 @@
     </tbody>
 </table>
 
+@if (totalPages > 1)
+{
+    <nav aria-label="Munkalapok lapozása" class="mt-4">
+        <ul class="pagination justify-content-center">
+            
+            @if (currentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(currentPage - 1)"
+                           asp-route-sortOrder="@ViewData["CurrentSort"]"
+                           asp-route-searchString="@ViewData["AktualisKereses"]"
+                           asp-route-showAll="@ViewData["ShowAll"]">
+                           Előző
+                    </a>
+                </li>
+            }
 
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-sortOrder="@ViewData["CurrentSort"]"
+                           asp-route-searchString="@ViewData["AktualisKereses"]"
+                           asp-route-showAll="@ViewData["ShowAll"]">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (currentPage < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(currentPage + 1)"
+                           asp-route-sortOrder="@ViewData["CurrentSort"]"
+                           asp-route-searchString="@ViewData["AktualisKereses"]"
+                           asp-route-showAll="@ViewData["ShowAll"]">
+                        Következő
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </nav>
+}
