@@ -10,42 +10,42 @@
 <div class="d-flex flex-column align-items-center" id="print-area">
     <h4>Munkalap</h4>
     <dl class="row text-center">
-        <dt class = "col-sm-6">
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.Title)
         </dt>
-        <dd class = "col-sm-6">
+        <dd class = "col-sm-3">
             @Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class="col-sm-6">
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.CreatedAt)
         </dt>
-        <dd class="col-sm-6">
+        <dd class="col-sm-3">
             @Html.DisplayFor(model => model.CreatedAt)
         </dd>
-        <dt class="col-sm-6">
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.ID)
         </dt>
-        <dd class="col-sm-6">
+        <dd class="col-sm-3">
             @Html.DisplayFor(model => model.ID)
         </dd>
         @if (!@Model.IsOpen) {
-        <dt class = "col-sm-6">
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.PaymentMethod)
         </dt>
-        <dd class = "col-sm-6">
+        <dd class = "col-sm-3">
             @Html.DisplayFor(model => model.PaymentMethod)
         </dd>
         }
-        <dt class = "col-sm-6">
+        <dt class = "col-sm-3">
             @Html.DisplayNameFor(model => model.Recruiter)
         </dt>
-        <dd class = "col-sm-6">
+        <dd class = "col-sm-3">
             @Html.DisplayFor(model => model.Recruiter.UserName) 
         </dd>
-        <dt class="col-sm-6">
+        <dt class="col-sm-3">
             @Html.DisplayNameFor(model => model.Mechanic)
         </dt>
-        <dd class="col-sm-6">
+        <dd class="col-sm-3">
             @Html.DisplayFor(model => model.Mechanic.UserName)
         </dd>
     </dl>

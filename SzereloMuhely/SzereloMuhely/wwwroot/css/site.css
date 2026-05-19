@@ -9,6 +9,11 @@ html {
 }
 
 @media print {
+    @page {
+        margin: 0;
+        padding: 2rem;
+    }
+
     body, button, title {
         visibility: hidden;
     }
@@ -33,6 +38,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
