@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="SzereloMuhely.Tests/SzereloMuhely.Tests.csproj" />
+  <Project Path="Szerelomuhely.Tests/SzereloMuhely.Tests.csproj" />
   <Project Path="SzereloMuhely/SzereloMuhely.csproj" />
 </Solution>
