@@ -27,22 +27,29 @@ namespace SzereloMuhely.Data
                 .HasMany(wp => wp.Materials)
                 .WithOne(m => m.WorkProcess)
                 .HasForeignKey(m => m.WorkProcessID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             modelBuilder.Entity<WorkProcess>()
                 .HasMany(wp => wp.Parts)
                 .WithOne(p => p.WorkProcess)
                 .HasForeignKey(p => p.WorkProcessID)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            modelBuilder.Entity<WorkSheet>()
+                .HasMany(ws => ws.WorkProcesses)
+                .WithOne(wp => wp.WorkSheet)
+                .HasForeignKey(wp => wp.WorkSheetID)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            modelBuilder.Entity<WorkSheet>()
+                .HasOne(ws => ws.Vehicle)
+                .WithOne(v => v.WorkSheet)
+                .HasForeignKey<Vehicle>(v => v.WorkSheetID)
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             modelBuilder.Entity<WorkSheet>()
                 .Property(w => w.MechanicID)
                 .HasColumnType("nvarchar(450)");
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
         }
     }
 }
