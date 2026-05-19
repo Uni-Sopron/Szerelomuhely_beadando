@@ -49,6 +49,8 @@
         </dd>
     </dl>
 
+    @if (Model.Vehicle != null)
+    {
     <hr />
     <h4>Jármű</h4>
     <table class="table">
@@ -71,7 +73,10 @@
             </tr>
         </tbody>
     </table>
+    }
 
+    @if (Model.WorkProcesses.Any())
+    {
     <hr />
     <h4>Munkafolyamatok</h4>
     <table class="table">
@@ -100,13 +105,73 @@
             }
         </tbody>
     </table>
+    }
 
+    @if (Model.WorkProcesses.Any(wp => wp.Parts.Any()))
+    {
+    <hr />
+    <h4>Alkatrészek</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Megnevezés</th>
+                <th>Mennyiség</th>
+                <th>Ár</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var wp in Model.WorkProcesses)
+            {
+                @foreach ( var p in wp.Parts)
+                {
+                    <tr>
+                        <td>@p.Name</td>
+                        <td>@p.Quantity</td>
+                        <td>@p.Price</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    }
 
+    @if (Model.WorkProcesses.Any(wp => wp.Materials.Any()))
+    {
+     <hr />
+     <h4>Anyagok</h4>
+     <table class="table">
+         <thead>
+             <tr>
+             <th>Megnevezés</th>
+             <th>Mennyiség</th>
+             <th>Ár</th>
+         </tr>
+        </thead>
+        <tbody>
+             @foreach (var wp in Model.WorkProcesses)
+             {
+                 @foreach (var m in wp.Materials)
+                 {
+                     <tr>
+                         <td>@m.Name</td>
+                         <td>@m.Quantity</td>
+                         <td>@m.Price</td>
+                     </tr>
+                 }
+             }
+        </tbody>
+     </table>
+     }
 
+    @if (Model.WorkProcesses.Any())
+    {
+        
     <hr />
     <div class="alert alert-info">
         <h5>Fizetendő végösszeg: @Model.TotalAmount.ToString("C0")</h5>
     </div>
+    }
+
     @if (!User.IsInRole("Mechanic"))
     {
     <div >
